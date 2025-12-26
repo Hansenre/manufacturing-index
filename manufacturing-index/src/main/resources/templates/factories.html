@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/head :: head('Título')"></head>
+
+	<div class="container">
+	    <div th:replace="fragments/sidebar :: sidebar"></div>
+	    <div class="content">
+			<body>
+
+			<h1>My Factories</h1>
+
+			<a href="/factories/new">New Factory</a>
+			<br><br>
+
+			<table border="1">
+			    <tr>
+			        <th>Name</th>
+			        <th>Country</th>
+			        <th>City</th>
+			        <th>KPIs</th>
+			    </tr>
+			    <tr th:each="f : ${factories}">
+			        <td th:text="${f.name}"></td>
+			        <td th:text="${f.country}"></td>
+			        <td th:text="${f.city}"></td>
+			        <td>
+			            <a th:href="@{'/kpis/' + ${f.id}}">View KPIs</a> |
+			            <a th:href="@{'/kpis/new/mqaas/' + ${f.id}}">New MQAAS</a> |
+			            <a th:href="@{'/kpis/new/btp/' + ${f.id}}">New BTP</a> |
+			            <a th:href="@{'/kpis/new/defect/' + ${f.id}}">New Defect</a>
+			        </td>
+			    </tr>
+			</table>
+
+			<br>
+			<a href="/">Back to Dashboard</a>
+
+			</body>
+	    </div>
+	</div>
+</html>
+
+

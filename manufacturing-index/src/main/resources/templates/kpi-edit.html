@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit KPI</title>
+</head>
+<body>
+
+<h2>Edit KPI</h2>
+
+<form th:action="@{/kpis/{id}/update(id=${kpi.id})}"
+      th:object="${kpi}"
+      method="post">
+
+    <!-- ESSENCIAL: garante UPDATE -->
+    <input type="hidden" th:field="*{id}" />
+
+    <!-- FY -->
+    <label>FY:</label><br/>
+    <input type="text" th:field="*{fy}" required /><br/><br/>
+
+    <!-- Quarter -->
+    <label>Quarter:</label><br/>
+    <input type="text" th:field="*{quarter}" required /><br/><br/>
+
+    <!-- Type -->
+    <label>Type:</label><br/>
+    <input type="text" th:field="*{type}" readonly /><br/><br/>
+
+    <!-- KPI Value -->
+    <label>Value:</label><br/>
+    <input type="number" step="0.01" th:field="*{kpiValue}" required /><br/><br/>
+
+    <!-- Points -->
+    <label>Points:</label><br/>
+    <input type="number" step="0.01" th:field="*{points}" required /><br/><br/>
+
+    <button type="submit">Update KPI</button>
+</form>
+
+<br/>
+
+<a th:href="@{/kpis/{factoryId}(factoryId=${kpi.factory.id})}">
+    Back to KPIs
+</a>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Manufacturing Dashboard')"></head>
+
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <!-- CONTEÚDO -->
+    <div class="content">
+
+        <h1>Manufacturing Index Dashboard</h1>
+
+        <p>
+            Bem-vindo, <strong th:text="${username}"></strong> 👋
+        </p>
+
+		<div class="card-grid">
+
+		    <a th:href="@{/factories}" class="card">
+		        <h3>🏭 Factories</h3>
+		        <p>Total: <strong th:text="${factoryCount}"></strong></p>
+		    </a>
+
+		    <a th:if="${firstFactoryId != null}"
+		       th:href="@{/kpis/{id}(id=${firstFactoryId})}"
+		       class="card">
+		        <h3>📊 KPIs</h3>
+		        <p>Total: <strong th:text="${totalKpis}"></strong></p>
+		    </a>
+
+		    <a th:if="${firstFactoryId != null}"
+		       th:href="@{/performance/{id}(id=${firstFactoryId})}"
+		       class="card">
+		        <h3>📈 Performance</h3>
+		        <p>Gold / Silver / Bronze</p>
+		    </a>
+
+		</div>
+
+    </div>
+</div>
+
+</body>
+</html>

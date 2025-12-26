@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Título')"></head>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <div class="content">
+		<body>
+
+		<!-- MENU -->
+		<div th:replace="fragments/topbar :: topbar"></div>
+
+		<!-- FILTROS -->
+		<div class="filters">
+		    <form method="get"
+		          th:action="@{/performance/{id}(id=${selectedFactory.id})}">
+
+		        <label><strong>Factory:</strong></label>
+		        <select
+		            onchange="location.href='/performance/' + this.value +
+		                      '?fy=' + document.getElementById('fy').value +
+		                      '&quarter=' + document.getElementById('quarter').value">
+
+		            <option th:each="f : ${factories}"
+		                    th:value="${f.id}"
+		                    th:text="${f.name}"
+		                    th:selected="${f.id == selectedFactory.id}">
+		            </option>
+		        </select>
+
+		        &nbsp;&nbsp;
+
+		        <label><strong>FY:</strong></label>
+		        <select id="fy">
+		            <option value="FY25" th:selected="${fy == 'FY25'}">FY25</option>
+		            <option value="FY26" th:selected="${fy == 'FY26'}">FY26</option>
+		        </select>
+
+		        &nbsp;&nbsp;
+
+		        <label><strong>Quarter:</strong></label>
+		        <select id="quarter">
+		            <option value="Q1" th:selected="${quarter == 'Q1'}">Q1</option>
+		            <option value="Q2" th:selected="${quarter == 'Q2'}">Q2</option>
+		            <option value="Q3" th:selected="${quarter == 'Q3'}">Q3</option>
+		            <option value="Q4" th:selected="${quarter == 'Q4'}">Q4</option>
+		        </select>
+
+		    </form>
+		</div>
+
+		<!-- CONTEÚDO -->
+		<h1>
+		    Performance by Quarter – <span th:text="${selectedFactory.name}"></span>
+		</h1>
+
+		<p>
+		    FY: <strong th:text="${fy}"></strong> |
+		    Quarter: <strong th:text="${quarter}"></strong>
+		</p>
+
+		<h2>
+		    Total Points:
+		    <span th:text="${#numbers.formatDecimal(totalPoints, 1, 2)}"></span>
+		</h2>
+
+		<h1>
+		    Performance Level:
+		    <span class="badge"
+		          th:text="${level}"
+		          th:classappend="' badge-' + ${level}">
+		    </span>
+		</h1>
+
+		<hr/>
+
+		<h3>KPI Breakdown</h3>
+
+		<table>
+		    <thead>
+		        <tr>
+		            <th>Type</th>
+		            <th>Value</th>
+		            <th>Points</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        <tr th:each="k : ${kpis}">
+		            <td th:text="${k.type}"></td>
+		            <td th:text="${#numbers.formatDecimal(k.kpiValue, 1, 2)}"></td>
+		            <td th:text="${#numbers.formatDecimal(k.points, 1, 2)}"></td>
+		        </tr>
+		    </tbody>
+		</table>
+
+		<br/>
+
+		<a th:href="@{/performance}">⬅ Back to Performance Selection</a>
+
+		</body>
+    </div>
+</div>
+
+
+</html>
+
+
+
+
+
+
+
