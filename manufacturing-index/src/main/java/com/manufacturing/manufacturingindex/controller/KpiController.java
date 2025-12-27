@@ -56,12 +56,15 @@ public class KpiController {
         }
 
         List<KpiRecord> kpis = kpiRepo.findByFactory(factory);
+        List<Factory> factories = factoryRepo.findByOwner(user); // 🔥 AQUI
 
         model.addAttribute("factory", factory);
         model.addAttribute("kpis", kpis);
+        model.addAttribute("factories", factories); // 🔥 E AQUI
 
         return "kpis";
     }
+
 
     // =====================================================
     // FORMULÁRIOS DE CRIAÇÃO

@@ -8,6 +8,23 @@
 			<body>
 
 			<h1>KPIs</h1>
+			<!-- 🔽 SELETOR DE FÁBRICA -->
+			<form>
+			    <label><strong>Select Factory:</strong></label>
+
+			    <select id="factorySelect"
+			            onchange="changeFactory()">
+
+			        <option th:each="f : ${factories}"
+			                th:value="${f.id}"
+			                th:text="${f.name}"
+			                th:selected="${f.id == factory.id}">
+			        </option>
+
+			    </select>
+			</form>
+
+			<br/>
 
 			<p>
 			    Factory:
@@ -45,6 +62,12 @@
 			<br/>
 
 			<a th:href="@{/factories}">⬅ Back to Factories</a>
+			<script>
+			function changeFactory() {
+			    const factoryId = document.getElementById("factorySelect").value;
+			    window.location.href = "/kpis/" + factoryId;
+			}
+			</script>
 
 			</body>
 	    </div>
