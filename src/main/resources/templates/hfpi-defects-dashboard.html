@@ -21,6 +21,22 @@
         <a th:href="@{/hfpi/{id}(id=${factory.id})}" class="btn-secondary">
             ⬅ Back to HFPI Events
         </a>
+		
+		<!-- ===================== -->
+		       <!-- PIZZA: Defeitos por descrição -->
+		       <!-- ===================== -->
+		       <div class="card">
+		           <h3>Defects by Description</h3>
+		           <canvas id="defectPieChart"></canvas>
+		       </div>
+
+		       <!-- ===================== -->
+		       <!-- BARRAS EMPILHADAS -->
+		       <!-- ===================== -->
+		       <div class="card">
+		           <h3>Defects by Severity</h3>
+		           <canvas id="defectStackedChart"></canvas>
+		       </div>
 
         <br><br>
 
@@ -29,54 +45,61 @@
     </div>
 </div>
 
-<!-- Chart.js -->
+<!-- ===================== -->
+<!-- CHART.JS -->
+<!-- ===================== -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script th:inline="javascript">
-    const rawData = /*[[${defectData}]]*/ [];
+/* 🍕 PIZZA */
+const pieLabels = /*[[${pieLabels}]]*/ [];
+const pieValues = /*[[${pieValues}]]*/ [];
 
-    const labels = [];
-    const menor = [];
-    const moderado = [];
-    const severo = [];
-
-    rawData.forEach(row => {
-        const defect = row.defect;
-        const severity = row.severity;
-        const count = row.count;
-
-        if (!labels.includes(defect)) {
-            labels.push(defect);
-            menor.push(0);
-            moderado.push(0);
-            severo.push(0);
+new Chart(document.getElementById('defectPieChart'), {
+    type: 'pie',
+    data: {
+        labels: pieLabels,
+        datasets: [{
+            data: pieValues
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'right' }
         }
-
-        const index = labels.indexOf(defect);
-
-        if (severity === 'MENOR') menor[index] = count;
-        if (severity === 'MODERADO') moderado[index] = count;
-        if (severity === 'SEVERO') severo[index] = count;
-    });
-
-    new Chart(document.getElementById('defectChart'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                { label: 'Menor', data: menor, backgroundColor: '#16a34a' },
-                { label: 'Moderado', data: moderado, backgroundColor: '#facc15' },
-                { label: 'Severo', data: severo, backgroundColor: '#dc2626' }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+    }
+});
 </script>
+
+<script th:inline="javascript">
+/* 📊 EMPILHADO */
+const stackedLabels = /*[[${stackedLabels}]]*/ [];
+const stackedMenor = /*[[${stackedMenor}]]*/ [];
+const stackedModerado = /*[[${stackedModerado}]]*/ [];
+const stackedSevero = /*[[${stackedSevero}]]*/ [];
+
+new Chart(document.getElementById('defectStackedChart'), {
+    type: 'bar',
+    data: {
+        labels: stackedLabels,
+        datasets: [
+            { label: 'Menor', data: stackedMenor },
+            { label: 'Moderado', data: stackedModerado },
+            { label: 'Severo', data: stackedSevero }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: { stacked: true },
+            y: { stacked: true, beginAtZero: true }
+        }
+    }
+});
+</script>
+
+
 
 
 </body>

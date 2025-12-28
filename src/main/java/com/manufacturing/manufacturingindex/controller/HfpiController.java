@@ -1,19 +1,15 @@
 package com.manufacturing.manufacturingindex.controller;
 
-import com.manufacturing.manufacturingindex.model.DefectType;
 import com.manufacturing.manufacturingindex.model.Factory;
 import com.manufacturing.manufacturingindex.model.HfpiEvent;
 import com.manufacturing.manufacturingindex.model.HfpiItem;
-import com.manufacturing.manufacturingindex.model.HfpiItemDefect;
 import com.manufacturing.manufacturingindex.repository.DefectTypeRepository;
 import com.manufacturing.manufacturingindex.repository.FactoryRepository;
 import com.manufacturing.manufacturingindex.repository.HfpiEventRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.manufacturing.manufacturingindex.repository.HfpiItemDefectRepository;
-
-import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,19 +22,15 @@ public class HfpiController {
     private final HfpiEventRepository eventRepo;
     private final FactoryRepository factoryRepo;
     private final DefectTypeRepository defectTypeRepo;
-    private final HfpiItemDefectRepository defectRepo;
-
 
     public HfpiController(HfpiEventRepository eventRepo,
-            FactoryRepository factoryRepo,
-            DefectTypeRepository defectTypeRepo,
-            HfpiItemDefectRepository defectRepo) {
+                          FactoryRepository factoryRepo,
+                          DefectTypeRepository defectTypeRepo) {
 
-this.eventRepo = eventRepo;
-this.factoryRepo = factoryRepo;
-this.defectTypeRepo = defectTypeRepo;
-this.defectRepo = defectRepo;
-}
+        this.eventRepo = eventRepo;
+        this.factoryRepo = factoryRepo;
+        this.defectTypeRepo = defectTypeRepo;
+    }
 
     /* =========================
        FY / QUARTER
@@ -89,8 +81,6 @@ this.defectRepo = defectRepo;
         event.setEventDate(LocalDate.now());
         event.setEventName("HFPI - " + factory.getName());
         event.setFactory(factory);
-
-        // 🔥 ESSENCIAL PARA O FORM
         event.setItems(new ArrayList<>());
 
         model.addAttribute("hfpiEvent", event);
@@ -100,18 +90,17 @@ this.defectRepo = defectRepo;
         return "hfpi/form";
     }
 
-
-
     /* =========================
        SALVAR
        ========================= */
-
-    
     @PostMapping("/save")
     @Transactional
     public String save(@ModelAttribute HfpiEvent event,
                        @RequestParam Long factoryId,
-                       @RequestParam List<String> ratings) {
+                       @RequestParam List<String> ratings,
+                       @RequestParam(required = false) List<Long> defectTypeIds1,
+                       @RequestParam(required = false) List<Long> defectTypeIds2,
+                       @RequestParam(required = false) List<Long> defectTypeIds3) {
 
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
         event.setFactory(factory);
@@ -123,48 +112,43 @@ this.defectRepo = defectRepo;
         List<HfpiItem> items = new ArrayList<>();
 
         for (int i = 0; i < ratings.size(); i++) {
+
             HfpiItem item = new HfpiItem();
             item.setEvent(event);
             item.setItemNumber(i + 1);
             item.setRating(ratings.get(i));
+
+            if (!"BOM".equals(ratings.get(i))) {
+
+                if (defectTypeIds1 != null && i < defectTypeIds1.size()) {
+                    Long id = defectTypeIds1.get(i);
+                    if (id != null)
+                        item.setDefect1(defectTypeRepo.findById(id).orElse(null));
+                }
+
+                if (defectTypeIds2 != null && i < defectTypeIds2.size()) {
+                    Long id = defectTypeIds2.get(i);
+                    if (id != null)
+                        item.setDefect2(defectTypeRepo.findById(id).orElse(null));
+                }
+
+                if (defectTypeIds3 != null && i < defectTypeIds3.size()) {
+                    Long id = defectTypeIds3.get(i);
+                    if (id != null)
+                        item.setDefect3(defectTypeRepo.findById(id).orElse(null));
+                }
+            }
+
             items.add(item);
         }
 
         event.setItems(items);
-
         event.setSeverity(calcularSeverity(ratings));
         event.setStatus("OPEN");
         event.setFy(gerarFy(event.getEventDate()));
         event.setQuarter(calcularQuarter(event.getEventDate()));
 
-        // 1️⃣ salva EVENT + ITEMS
         eventRepo.save(event);
-
-        // 2️⃣ COPIA a lista gerenciada
-        List<HfpiItem> savedItems = new ArrayList<>(event.getItems());
-
-        // 3️⃣ cria DEFEITOS
-        for (HfpiItem item : savedItems) {
-
-            if (!item.getRating().equals("BOM")) {
-
-                HfpiItemDefect defect = new HfpiItemDefect();
-                defect.setItem(item);
-                defect.setSeverity(item.getRating());
-
-                defect.setDefectType(
-                    defectTypeRepo.findByCode("GEN").orElseThrow()
-                );
-
-                defectRepo.save(defect);
-            }
-        }
-        event.setItems(items);
-
-        event.setSeverity(calcularSeverity(ratings));
-        event.setStatus("OPEN");
-        event.setFy(gerarFy(event.getEventDate()));
-        event.setQuarter(calcularQuarter(event.getEventDate()));
 
         return "redirect:/hfpi/" + factoryId;
     }
@@ -182,7 +166,7 @@ this.defectRepo = defectRepo;
     }
 
     /* =========================
-       ATUALIZAR
+       UPDATE
        ========================= */
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id,

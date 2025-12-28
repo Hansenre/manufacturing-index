@@ -50,14 +50,15 @@
         ========================== -->
         <h2>HFPI Checklist (32 Items)</h2>
 
-        <div th:each="i : ${#numbers.sequence(1,32)}"
+        <div th:each="i, stat : ${#numbers.sequence(1,32)}"
              class="hfpi-item">
 
             <!-- HEADER DO ITEM -->
             <div class="hfpi-item-header">
                 <span th:text="'Item ' + ${i}"></span>
 
-                <select name="ratings">
+                <select name="ratings"
+                        onchange="toggleDefects(this, [[${stat.index}]])">
                     <option value="BOM">Bom</option>
                     <option value="MENOR">Menor</option>
                     <option value="MODERADO">Moderado</option>
@@ -67,29 +68,33 @@
 
             <!-- DEFEITOS -->
             <div class="hfpi-defects">
-                <select name="defectIds">
-                    <option value="">-- Defeito 1 --</option>
-                    <option th:each="d : ${defectTypes}"
-                            th:value="${d.id}"
-                            th:text="${d.code + ' - ' + d.name}">
-                    </option>
-                </select>
 
-                <select name="defectIds">
-                    <option value="">-- Defeito 2 --</option>
-                    <option th:each="d : ${defectTypes}"
-                            th:value="${d.id}"
-                            th:text="${d.code + ' - ' + d.name}">
-                    </option>
-                </select>
+				<select name="defectTypeIds1">
+				    <option value="">-- Defeito 1 --</option>
+				    <option th:each="d : ${defectTypes}"
+				            th:value="${d.id}"
+				            th:text="${d.name}">
+				    </option>
+				</select>
 
-                <select name="defectIds">
-                    <option value="">-- Defeito 3 --</option>
-                    <option th:each="d : ${defectTypes}"
-                            th:value="${d.id}"
-                            th:text="${d.code + ' - ' + d.name}">
-                    </option>
-                </select>
+				<select name="defectTypeIds2">
+				    <option value="">-- Defeito 2 --</option>
+				    <option th:each="d : ${defectTypes}"
+				            th:value="${d.id}"
+				            th:text="${d.name}">
+				    </option>
+				</select>
+
+
+				<select name="defectTypeIds3">
+				    <option value="">-- Defeito 3 --</option>
+				    <option th:each="d : ${defectTypes}"
+				            th:value="${d.id}"
+				            th:text="${d.name}">
+				    </option>
+				</select>
+
+
             </div>
 
         </div>
@@ -99,6 +104,25 @@
     </form>
 
 </div>
+
+<!-- =========================
+     SCRIPT
+========================== -->
+<script>
+function toggleDefects(ratingSelect, index) {
+
+    const d1 = document.getElementById("def1-" + index);
+    const d2 = document.getElementById("def2-" + index);
+    const d3 = document.getElementById("def3-" + index);
+
+    const isBom = ratingSelect.value === "BOM";
+
+    [d1, d2, d3].forEach(d => {
+        d.disabled = isBom;
+        if (isBom) d.value = "";
+    });
+}
+</script>
 
 </body>
 </html>
