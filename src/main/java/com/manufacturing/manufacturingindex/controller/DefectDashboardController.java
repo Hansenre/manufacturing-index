@@ -2,12 +2,14 @@ package com.manufacturing.manufacturingindex.controller;
 
 import com.manufacturing.manufacturingindex.repository.HfpiItemDefectRepository;
 import com.manufacturing.manufacturingindex.repository.FactoryRepository;
+import com.manufacturing.manufacturingindex.dto.DefectChartDTO;
 import com.manufacturing.manufacturingindex.model.Factory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -27,11 +29,24 @@ public class DefectDashboardController {
 
         Factory factory = factoryRepository.findById(factoryId).orElseThrow();
 
-        List<Object[]> data = defectRepository.countDefectsBySeverity(factoryId);
+        List<Object[]> raw = defectRepository.countDefectsBySeverity(factoryId);
+
+        List<DefectChartDTO> chartData = new ArrayList<>();
+
+        for (Object[] row : raw) {
+            chartData.add(
+                new DefectChartDTO(
+                    (String) row[0],   // defect
+                    (String) row[1],   // severity
+                    (Long) row[2]      // count
+                )
+            );
+        }
 
         model.addAttribute("factory", factory);
-        model.addAttribute("defectData", data);
+        model.addAttribute("defectData", chartData);
 
         return "hfpi-defects-dashboard";
     }
+
 }

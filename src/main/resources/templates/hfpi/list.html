@@ -7,9 +7,19 @@
 
 <h2 th:text="'HFPI Events - ' + ${factory.name}"></h2>
 
-<a th:href="@{/hfpi/new/{id}(id=${factory.id})}" class="btn-primary">
-    ➕ New HFPI Event
-</a>
+<div class="section">
+
+    <a th:href="@{/hfpi/new/{id}(id=${factory.id})}"
+       class="btn-primary">
+        ➕ New HFPI Event
+    </a>
+
+    <a th:href="@{/hfpi/defects/{id}(id=${factory.id})}"
+       class="btn-secondary">
+        📊 Defects Dashboard
+    </a>
+
+</div>
 
 <table>
     <thead>

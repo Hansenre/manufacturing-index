@@ -461,6 +461,22 @@ button:hover,
     gap: 10px;
 }
 
+/* ===============================
+   HFPI PAGE (OFICIAL)
+   =============================== */
+.hfpi-page {
+    max-width: 1200px;
+    margin: 30px auto;     /* centraliza e afasta do topo */
+    padding: 24px;         /* espaço interno */
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+
+
+
+
 
 
 

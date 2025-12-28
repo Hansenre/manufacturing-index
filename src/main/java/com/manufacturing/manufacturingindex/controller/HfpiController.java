@@ -1,14 +1,19 @@
 package com.manufacturing.manufacturingindex.controller;
 
+import com.manufacturing.manufacturingindex.model.DefectType;
 import com.manufacturing.manufacturingindex.model.Factory;
 import com.manufacturing.manufacturingindex.model.HfpiEvent;
 import com.manufacturing.manufacturingindex.model.HfpiItem;
+import com.manufacturing.manufacturingindex.model.HfpiItemDefect;
 import com.manufacturing.manufacturingindex.repository.DefectTypeRepository;
 import com.manufacturing.manufacturingindex.repository.FactoryRepository;
 import com.manufacturing.manufacturingindex.repository.HfpiEventRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.manufacturing.manufacturingindex.repository.HfpiItemDefectRepository;
+
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,14 +26,19 @@ public class HfpiController {
     private final HfpiEventRepository eventRepo;
     private final FactoryRepository factoryRepo;
     private final DefectTypeRepository defectTypeRepo;
+    private final HfpiItemDefectRepository defectRepo;
+
 
     public HfpiController(HfpiEventRepository eventRepo,
-                          FactoryRepository factoryRepo,
-                          DefectTypeRepository defectTypeRepo) {
-        this.eventRepo = eventRepo;
-        this.factoryRepo = factoryRepo;
-        this.defectTypeRepo = defectTypeRepo;
-    }
+            FactoryRepository factoryRepo,
+            DefectTypeRepository defectTypeRepo,
+            HfpiItemDefectRepository defectRepo) {
+
+this.eventRepo = eventRepo;
+this.factoryRepo = factoryRepo;
+this.defectTypeRepo = defectTypeRepo;
+this.defectRepo = defectRepo;
+}
 
     /* =========================
        FY / QUARTER
@@ -95,20 +105,19 @@ public class HfpiController {
     /* =========================
        SALVAR
        ========================= */
+
+    
     @PostMapping("/save")
+    @Transactional
     public String save(@ModelAttribute HfpiEvent event,
                        @RequestParam Long factoryId,
-                       @RequestParam List<String> ratings,
-                       @RequestParam(required = false) List<Long> defectIds) {
+                       @RequestParam List<String> ratings) {
 
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
         event.setFactory(factory);
 
-        // 🔥 GARANTIA ABSOLUTA DO EVENT_NAME
         if (event.getEventName() == null || event.getEventName().isBlank()) {
-            event.setEventName(
-                "HFPI - " + factory.getName() + " - " + LocalDate.now()
-            );
+            event.setEventName("HFPI - " + factory.getName() + " - " + LocalDate.now());
         }
 
         List<HfpiItem> items = new ArrayList<>();
@@ -128,11 +137,37 @@ public class HfpiController {
         event.setFy(gerarFy(event.getEventDate()));
         event.setQuarter(calcularQuarter(event.getEventDate()));
 
+        // 1️⃣ salva EVENT + ITEMS
         eventRepo.save(event);
+
+        // 2️⃣ COPIA a lista gerenciada
+        List<HfpiItem> savedItems = new ArrayList<>(event.getItems());
+
+        // 3️⃣ cria DEFEITOS
+        for (HfpiItem item : savedItems) {
+
+            if (!item.getRating().equals("BOM")) {
+
+                HfpiItemDefect defect = new HfpiItemDefect();
+                defect.setItem(item);
+                defect.setSeverity(item.getRating());
+
+                defect.setDefectType(
+                    defectTypeRepo.findByCode("GEN").orElseThrow()
+                );
+
+                defectRepo.save(defect);
+            }
+        }
+        event.setItems(items);
+
+        event.setSeverity(calcularSeverity(ratings));
+        event.setStatus("OPEN");
+        event.setFy(gerarFy(event.getEventDate()));
+        event.setQuarter(calcularQuarter(event.getEventDate()));
 
         return "redirect:/hfpi/" + factoryId;
     }
-
 
     /* =========================
        EDITAR

@@ -26,6 +26,12 @@
                    class="btn-primary">
                     ➕ New HFPI Event
                 </a>
+				
+				<a th:href="@{/hfpi/defects/{id}(id=${factory.id})}"
+				       class="btn-secondary">
+				        📊 Defects Dashboard
+				 </a>
+
 
                 <a th:href="@{/}"
                    class="btn-secondary">
@@ -34,7 +40,7 @@
             </div>
 
             <!-- TABELA -->
-            <table>
+            <table class="table-hfpi">
                 <thead>
                 <tr>
                     <th>Date</th>

@@ -33,7 +33,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script th:inline="javascript">
-    const rawData = [[${defectData}]];
+    const rawData = /*[[${defectData}]]*/ [];
 
     const labels = [];
     const menor = [];
@@ -41,9 +41,9 @@
     const severo = [];
 
     rawData.forEach(row => {
-        const defect = row[0];
-        const severity = row[1];
-        const count = row[2];
+        const defect = row.defect;
+        const severity = row.severity;
+        const count = row.count;
 
         if (!labels.includes(defect)) {
             labels.push(defect);
@@ -59,55 +59,25 @@
         if (severity === 'SEVERO') severo[index] = count;
     });
 
-    const ctx = document.getElementById('defectChart');
-
-    new Chart(ctx, {
+    new Chart(document.getElementById('defectChart'), {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [
-                {
-                    label: 'Menor',
-                    data: menor,
-                    backgroundColor: '#16a34a'
-                },
-                {
-                    label: 'Moderado',
-                    data: moderado,
-                    backgroundColor: '#facc15'
-                },
-                {
-                    label: 'Severo',
-                    data: severo,
-                    backgroundColor: '#dc2626'
-                }
+                { label: 'Menor', data: menor, backgroundColor: '#16a34a' },
+                { label: 'Moderado', data: moderado, backgroundColor: '#facc15' },
+                { label: 'Severo', data: severo, backgroundColor: '#dc2626' }
             ]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Quantidade de Defeitos'
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Defeitos'
-                    }
-                }
+                y: { beginAtZero: true }
             }
         }
     });
 </script>
+
 
 </body>
 </html>
