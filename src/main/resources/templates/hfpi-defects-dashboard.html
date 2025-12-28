@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('HFPI Defect Dashboard')"></head>
+
+<body>
+
+<div class="container">
+
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+
+        <h1>📊 HFPI Defect Dashboard</h1>
+
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
+
+        <a th:href="@{/hfpi/{id}(id=${factory.id})}" class="btn-secondary">
+            ⬅ Back to HFPI Events
+        </a>
+
+        <br><br>
+
+        <canvas id="defectChart" height="120"></canvas>
+
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    const rawData = [[${defectData}]];
+
+    const labels = [];
+    const menor = [];
+    const moderado = [];
+    const severo = [];
+
+    rawData.forEach(row => {
+        const defect = row[0];
+        const severity = row[1];
+        const count = row[2];
+
+        if (!labels.includes(defect)) {
+            labels.push(defect);
+            menor.push(0);
+            moderado.push(0);
+            severo.push(0);
+        }
+
+        const index = labels.indexOf(defect);
+
+        if (severity === 'MENOR') menor[index] = count;
+        if (severity === 'MODERADO') moderado[index] = count;
+        if (severity === 'SEVERO') severo[index] = count;
+    });
+
+    const ctx = document.getElementById('defectChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Menor',
+                    data: menor,
+                    backgroundColor: '#16a34a'
+                },
+                {
+                    label: 'Moderado',
+                    data: moderado,
+                    backgroundColor: '#facc15'
+                },
+                {
+                    label: 'Severo',
+                    data: severo,
+                    backgroundColor: '#dc2626'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantidade de Defeitos'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Defeitos'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

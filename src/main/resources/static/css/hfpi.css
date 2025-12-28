@@ -1,0 +1,213 @@
+/* =========================
+   HFPI FORM LAYOUT
+========================= */
+
+.hfpi-form {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.hfpi-form h1 {
+    margin-bottom: 20px;
+}
+
+/* =========================
+   CAMPOS DO EVENTO
+========================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* textarea maior */
+.form-group.full {
+    grid-column: span 4;
+}
+
+/* =========================
+   HFPI ITEMS (32)
+========================= */
+
+.hfpi-items {
+    border-top: 2px solid #eee;
+    padding-top: 20px;
+}
+
+.hfpi-item {
+    display: grid;
+    grid-template-columns: 80px 160px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.hfpi-item strong {
+    font-size: 14px;
+}
+
+/* =========================
+   BOTÃO
+========================= */
+
+.btn-primary {
+    background: #111;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-primary:hover {
+    background: #333;
+}
+
+/* ===============================
+   HFPI – GRID DOS 32 ITENS
+   =============================== */
+
+.hfpi-items {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.hfpi-item {
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 14px;
+    border-left: 6px solid #9ca3af;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+}
+
+.hfpi-item strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* ===============================
+   SELECT DE SEVERIDADE
+   =============================== */
+
+.hfpi-item select {
+    width: 100%;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+/* ===============================
+   CORES AUTOMÁTICAS
+   =============================== */
+
+.hfpi-item select option[value="BOM"] {
+    color: #065f46;
+}
+
+.hfpi-item select option[value="MENOR"] {
+    color: #92400e;
+}
+
+.hfpi-item select option[value="MODERADO"] {
+    color: #b45309;
+}
+
+.hfpi-item select option[value="SEVERO"] {
+    color: #991b1b;
+}
+
+/* ===============================
+   BORDAS POR SEVERIDADE (JS-free)
+   =============================== */
+
+.hfpi-item[data-rating="BOM"] {
+    border-left-color: #16a34a;
+}
+
+.hfpi-item[data-rating="MENOR"] {
+    border-left-color: #facc15;
+}
+
+.hfpi-item[data-rating="MODERADO"] {
+    border-left-color: #f97316;
+}
+
+.hfpi-item[data-rating="SEVERO"] {
+    border-left-color: #dc2626;
+}
+
+/* ===============================
+   LISTAGEM HFPI (hfpi.html)
+   =============================== */
+
+.hfpi-table td span {
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.hfpi-GOLD { background: #d4af37; color: #fff; }
+.hfpi-SILVER { background: #9ca3af; color: #fff; }
+.hfpi-BRONZE { background: #92400e; color: #fff; }
+.hfpi-YELLOW { background: #fde047; color: #000; }
+.hfpi-RED { background: #dc2626; color: #fff; }
+
+/* NÃO estilize o body */
+body {
+    margin: 0;
+    padding: 0;
+    background: #f4f6f8; /* neutro */
+    font-family: Arial, sans-serif;
+}
+
+/* Área exclusiva do HFPI */
+.hfpi-page {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Título */
+.hfpi-page h1 {
+    margin-bottom: 20px;
+    color: #1f2937;
+}
+
+.hfpi-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+

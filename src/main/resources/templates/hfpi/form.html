@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New HFPI Event</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/hfpi.css}">
+</head>
+<body>
+
+<div class="hfpi-page">
+
+    <h1>New HFPI Event</h1>
+
+    <form th:action="@{/hfpi/save}"
+          th:object="${hfpiEvent}"
+          method="post">
+
+        <input type="hidden" name="factoryId" th:value="${factory.id}" />
+
+        <!-- =========================
+             TOPO DO FORM
+        ========================== -->
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" th:field="*{eventDate}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Model Name</label>
+                <input type="text" th:field="*{modelName}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fiscal Year</label>
+                <input type="text" th:value="${hfpiEvent.fy}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Quarter</label>
+                <input type="text" th:value="${hfpiEvent.quarter}" readonly>
+            </div>
+
+        </div>
+
+        <!-- =========================
+             CHECKLIST
+        ========================== -->
+        <h2>HFPI Checklist (32 Items)</h2>
+
+        <div th:each="i : ${#numbers.sequence(1,32)}"
+             class="hfpi-item">
+
+            <!-- HEADER DO ITEM -->
+            <div class="hfpi-item-header">
+                <span th:text="'Item ' + ${i}"></span>
+
+                <select name="ratings">
+                    <option value="BOM">Bom</option>
+                    <option value="MENOR">Menor</option>
+                    <option value="MODERADO">Moderado</option>
+                    <option value="SEVERO">Severo</option>
+                </select>
+            </div>
+
+            <!-- DEFEITOS -->
+            <div class="hfpi-defects">
+                <select name="defectIds">
+                    <option value="">-- Defeito 1 --</option>
+                    <option th:each="d : ${defectTypes}"
+                            th:value="${d.id}"
+                            th:text="${d.code + ' - ' + d.name}">
+                    </option>
+                </select>
+
+                <select name="defectIds">
+                    <option value="">-- Defeito 2 --</option>
+                    <option th:each="d : ${defectTypes}"
+                            th:value="${d.id}"
+                            th:text="${d.code + ' - ' + d.name}">
+                    </option>
+                </select>
+
+                <select name="defectIds">
+                    <option value="">-- Defeito 3 --</option>
+                    <option th:each="d : ${defectTypes}"
+                            th:value="${d.id}"
+                            th:text="${d.code + ' - ' + d.name}">
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <button type="submit">Salvar HFPI</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

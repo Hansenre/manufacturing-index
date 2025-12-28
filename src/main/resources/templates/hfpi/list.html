@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('HFPI Events')"></head>
+
+<body>
+<div class="hfpi-page">
+
+<h2 th:text="'HFPI Events - ' + ${factory.name}"></h2>
+
+<a th:href="@{/hfpi/new/{id}(id=${factory.id})}" class="btn-primary">
+    ➕ New HFPI Event
+</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>FY</th>
+        <th>Quarter</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="event : ${events}">
+        <td th:text="${event.id}"></td>
+        <td th:text="${event.eventDate}"></td>
+        <td th:text="${event.fy}"></td>
+        <td th:text="${event.quarter}"></td>
+        <td th:text="${event.severity}"></td>
+        <td th:text="${event.status}"></td>
+        <td>
+            <a th:href="@{/hfpi/edit/{id}(id=${event.id})}" class="btn-edit">✏️ Edit</a>
+            |
+            <a th:href="@{/hfpi/delete/{id}(id=${event.id})}"
+               class="btn-delete"
+               onclick="return confirm('Delete this event?')">
+               🗑 Delete
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</div>
+</body>
+</html>

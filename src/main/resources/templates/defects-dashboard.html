@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('Defects Dashboard')"></head>
+
+<body>
+<div class="container">
+
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+
+        <h1>📊 Defects by Severity</h1>
+
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
+
+        <!-- TABLE -->
+        <table class="table-hfpi">
+            <thead>
+            <tr>
+                <th>Defect</th>
+                <th>MENOR</th>
+                <th>MODERADO</th>
+                <th>SEVERO</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="defect : ${defects}">
+                <td th:text="${defect.key}"></td>
+                <td th:text="${defect.value['MENOR'] ?: 0}"></td>
+                <td th:text="${defect.value['MODERADO'] ?: 0}"></td>
+                <td th:text="${defect.value['SEVERO'] ?: 0}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- GRAPH -->
+        <canvas id="defectChart" height="120"></canvas>
+
+        <br>
+
+        <a th:href="@{/hfpi/{id}(id=${factory.id})}"
+           class="btn-secondary">
+            ⬅ Back to HFPI
+        </a>
+
+    </div>
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script th:inline="javascript">
+    const data = /*[[${defects}]]*/ {};
+
+    const labels = Object.keys(data);
+
+    const menor = labels.map(d => data[d]['MENOR'] || 0);
+    const moderado = labels.map(d => data[d]['MODERADO'] || 0);
+    const severo = labels.map(d => data[d]['SEVERO'] || 0);
+
+    new Chart(document.getElementById('defectChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'MENOR',
+                    data: menor,
+                    backgroundColor: '#81c784'
+                },
+                {
+                    label: 'MODERADO',
+                    data: moderado,
+                    backgroundColor: '#ffb74d'
+                },
+                {
+                    label: 'SEVERO',
+                    data: severo,
+                    backgroundColor: '#e57373'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

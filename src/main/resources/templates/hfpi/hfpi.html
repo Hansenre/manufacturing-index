@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head :: head('HFPI Events')"></head>
+
+<body>
+
+<div class="container">
+
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+
+        <div class="hfpi-page">
+
+            <h1>🚨 HFPI Events</h1>
+
+            <p>
+                Factory:
+                <strong th:text="${factory.name}"></strong>
+            </p>
+
+            <!-- AÇÕES -->
+            <div class="section">
+                <a th:href="@{/hfpi/new/{id}(id=${factory.id})}"
+                   class="btn-primary">
+                    ➕ New HFPI Event
+                </a>
+
+                <a th:href="@{/}"
+                   class="btn-secondary">
+                    ⬅ Back to Dashboard
+                </a>
+            </div>
+
+            <!-- TABELA -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="e : ${events}">
+                    <td th:text="${e.eventDate}"></td>
+
+                    <td>
+                        <span class="badge"
+                              th:text="${e.severity}"
+                              th:classappend="' badge-' + ${#strings.toLowerCase(e.severity)}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:text="${e.status}"
+                              th:classappend="' badge-' + ${#strings.toLowerCase(e.status)}">
+                        </span>
+                    </td>
+
+                    <td th:text="${e.description}"></td>
+
+                    <td class="actions">
+                        <a th:href="@{/hfpi/edit/{id}(id=${e.id})}"
+                           class="btn-edit">
+                            ✏ Edit
+                        </a>
+
+                        <form th:action="@{/hfpi/delete/{id}(id=${e.id})}"
+                              method="post"
+                              class="inline-form">
+                            <button type="submit"
+                                    class="btn-delete"
+                                    onclick="return confirm('Delete this event?')">
+                                🗑 Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(events)}">
+                    <td colspan="5">No HFPI events found.</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

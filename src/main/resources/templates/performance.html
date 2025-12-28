@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head th:replace="fragments/head :: head('Título')"></head>
+
+	<div class="container">
+	    <div th:replace="fragments/sidebar :: sidebar"></div>
+	    <div class="content">
+			<body>
+
+			<h1>Factory Performance</h1>
+
+			<!-- 🔽 SELETOR DE FÁBRICA -->
+			<form method="get"
+			      th:action="@{/performance/{id}(id=${factory.id})}"
+			      onsubmit="return false;">
+
+			    <label for="factorySelect"><strong>Select Factory:</strong></label>
+
+			    <select id="factorySelect"
+			            onchange="window.location.href=this.value">
+
+			        <option th:each="f : ${factories}"
+			                th:value="@{/performance/{id}(id=${f.id})}"
+			                th:text="${f.name}"
+			                th:selected="${f.id == factory.id}">
+			        </option>
+
+			    </select>
+			</form>
+
+			<hr/>
+
+			<p>
+			    Factory:
+			    <strong th:text="${factory.name}"></strong>
+			</p>
+
+			<h2>
+			    Total Points:
+			    <span th:text="${#numbers.formatDecimal(totalPoints, 1, 2)}"></span>
+			</h2>
+
+			<h1>
+			    Performance Level:
+			    <span class="badge"
+			          th:text="${level}"
+			          th:classappend="' badge-' + ${level}">
+			    </span>
+			</h1>
+
+			<hr/>
+
+			<h3>KPI Breakdown</h3>
+
+			<table border="1" cellpadding="5">
+			    <thead>
+			        <tr>
+			            <th>Type</th>
+			            <th>Value</th>
+			            <th>Points</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr th:each="k : ${kpis}">
+			            <td th:text="${k.type}"></td>
+			            <td th:text="${#numbers.formatDecimal(k.kpiValue, 1, 2)}"></td>
+			            <td th:text="${#numbers.formatDecimal(k.points, 1, 2)}"></td>
+			        </tr>
+			    </tbody>
+			</table>
+
+			<br/>
+
+			<a th:href="@{'/kpis/' + ${factory.id}}">⬅ Back to KPIs</a>
+
+			</body>
+	    </div>
+	</div>
+
+
+</html>
+
+

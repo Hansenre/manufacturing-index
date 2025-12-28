@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New BTP KPI</title>
+</head>
+<body>
+
+<h2>New BTP KPI</h2>
+
+<form action="/kpis" method="post">
+
+    <input type="hidden" name="factoryId" th:value="${factoryId}" />
+    <input type="hidden" name="type" value="BTP" />
+
+    FY:
+    <input name="fy" required><br><br>
+
+    Quarter:
+    <input name="quarter" required><br><br>
+
+    Samples Tested:
+    <input type="number" name="a" required><br><br>
+
+    Samples Approved:
+    <input type="number" name="b" required><br><br>
+
+    <button type="submit">Save KPI</button>
+</form>
+
+
+<br>
+<a th:href="@{'/kpis/' + ${factoryId}}">Back</a>
+
+</body>
+</html>
