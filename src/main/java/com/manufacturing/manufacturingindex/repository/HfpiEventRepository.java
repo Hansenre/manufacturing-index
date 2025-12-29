@@ -138,5 +138,51 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         ORDER BY e.quarter
     """)
     List<String> findQuartersByFY(@Param("fy") String fy);
+    
+    /* =====================================================
+    📦 Defeitos por Modelo (modelName)
+    ===================================================== */
+    /* =====================================================
+    👟 Defeitos por Modelo (CORRIGIDO)
+    ===================================================== */
+ @Query(value = """
+     SELECT e.model_name AS modelName, COUNT(d.id) AS count
+     FROM hfpi_events e
+     JOIN hfpi_items i ON i.event_id = e.id
+     JOIN defect_types_new d ON d.id = i.defect_1_id
+     WHERE e.factory_id = :factoryId
+       AND e.fy = :fy
+       AND e.quarter = :quarter
+     GROUP BY e.model_name
+
+     UNION ALL
+
+     SELECT e.model_name AS modelName, COUNT(d.id) AS count
+     FROM hfpi_events e
+     JOIN hfpi_items i ON i.event_id = e.id
+     JOIN defect_types_new d ON d.id = i.defect_2_id
+     WHERE e.factory_id = :factoryId
+       AND e.fy = :fy
+       AND e.quarter = :quarter
+     GROUP BY e.model_name
+
+     UNION ALL
+
+     SELECT e.model_name AS modelName, COUNT(d.id) AS count
+     FROM hfpi_events e
+     JOIN hfpi_items i ON i.event_id = e.id
+     JOIN defect_types_new d ON d.id = i.defect_3_id
+     WHERE e.factory_id = :factoryId
+       AND e.fy = :fy
+       AND e.quarter = :quarter
+     GROUP BY e.model_name
+ """, nativeQuery = true)
+ List<Object[]> countDefectsByModelRaw(
+         @Param("factoryId") Long factoryId,
+         @Param("fy") String fy,
+         @Param("quarter") String quarter
+ );
+
+
 
 }

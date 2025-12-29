@@ -149,4 +149,34 @@ public class DefectDashboardController {
 
         return eventRepository.findQuartersByFY(fy);
     }
+    
+    /* =====================================================
+    👟 ENDPOINT – Defeitos por Modelo
+    ===================================================== */
+ @GetMapping("/models")
+ @ResponseBody
+ public List<DefectCountDTO> defectByModel(
+         @RequestParam Long factoryId,
+         @RequestParam String fy,
+         @RequestParam String quarter) {
+
+     List<Object[]> raw =
+             eventRepository.countDefectsByModelRaw(factoryId, fy, quarter);
+
+     // consolida UNION (soma por modelo)
+     Map<String, Long> map = new LinkedHashMap<>();
+
+     for (Object[] r : raw) {
+         String model = (String) r[0];
+         Long count = ((Number) r[1]).longValue();
+         map.merge(model, count, Long::sum);
+     }
+
+     return map.entrySet()
+             .stream()
+             .map(e -> new DefectCountDTO(e.getKey(), e.getValue()))
+             .toList();
+ }
+
+
 }
