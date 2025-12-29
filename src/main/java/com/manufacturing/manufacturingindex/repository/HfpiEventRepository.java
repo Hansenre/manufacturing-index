@@ -16,7 +16,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     List<HfpiEvent> findByFactory(Factory factory);
 
     /* =====================================================
-       🍕 Defeitos por descrição
+       🍕 Defeitos por descrição (Pizza / Barras antigas)
        ===================================================== */
     @Query("""
         SELECT d.name, COUNT(d)
@@ -76,4 +76,67 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         GROUP BY d.name, i.rating
     """)
     List<Object[]> countDefectsBySeverity(@Param("factoryId") Long factoryId);
+
+    /* =====================================================
+       📈 Defeitos por FY + Quarter (Dashboard dinâmico)
+       ===================================================== */
+    @Query(value = """
+        SELECT d.name AS defectName, COUNT(*) AS count
+        FROM hfpi_events e
+        JOIN hfpi_items i ON i.event_id = e.id
+        JOIN defect_types_new d ON d.id = i.defect_1_id
+        WHERE e.factory_id = :factoryId
+          AND e.fy = :fy
+          AND e.quarter = :quarter
+        GROUP BY d.name
+
+        UNION ALL
+
+        SELECT d.name AS defectName, COUNT(*) AS count
+        FROM hfpi_events e
+        JOIN hfpi_items i ON i.event_id = e.id
+        JOIN defect_types_new d ON d.id = i.defect_2_id
+        WHERE e.factory_id = :factoryId
+          AND e.fy = :fy
+          AND e.quarter = :quarter
+        GROUP BY d.name
+
+        UNION ALL
+
+        SELECT d.name AS defectName, COUNT(*) AS count
+        FROM hfpi_events e
+        JOIN hfpi_items i ON i.event_id = e.id
+        JOIN defect_types_new d ON d.id = i.defect_3_id
+        WHERE e.factory_id = :factoryId
+          AND e.fy = :fy
+          AND e.quarter = :quarter
+        GROUP BY d.name
+    """, nativeQuery = true)
+    List<Object[]> countDefectsByFYAndQuarterRaw(
+            @Param("factoryId") Long factoryId,
+            @Param("fy") String fy,
+            @Param("quarter") String quarter
+    );
+
+    /* =====================================================
+       🔽 FILTROS DINÂMICOS (FY / Quarter)
+       ===================================================== */
+
+    // Lista FYs existentes no banco
+    @Query("""
+        SELECT DISTINCT e.fy
+        FROM HfpiEvent e
+        ORDER BY e.fy DESC
+    """)
+    List<String> findDistinctFYs();
+
+    // Lista Quarters por FY
+    @Query("""
+        SELECT DISTINCT e.quarter
+        FROM HfpiEvent e
+        WHERE e.fy = :fy
+        ORDER BY e.quarter
+    """)
+    List<String> findQuartersByFY(@Param("fy") String fy);
+
 }
