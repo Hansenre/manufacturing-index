@@ -11,13 +11,18 @@
 
     <a th:href="@{/hfpi/new/{id}(id=${factory.id})}"
        class="btn-primary">
-        ➕ New HFPI Event
+        ➕ New HFPI Online
     </a>
 
     <a th:href="@{/hfpi/defects/{id}(id=${factory.id})}"
        class="btn-secondary">
         📊 Defects Dashboard
     </a>
+	
+	<a th:href="@{/hfpi-factory/{id}(id=${factory.id})}"  class="btn-primary">
+	    ➕ New HFPI Factory Interno
+	</a>
+
 
 </div>
 

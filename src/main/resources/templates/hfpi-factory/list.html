@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('HFPI Factory List')"></head>
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/hfpi-factory.css}">
+<body>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+        <h1>🏭 HFPI Factory</h1>
+
+        <p>Factory: <strong th:text="${factory.name}"></strong></p>
+
+        <div th:if="${success}" class="alert success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+        <div class="actions">
+            <a class="btn-primary" th:href="@{/hfpi-factory/new/{id}(id=${factory.id})}">➕ Novo</a>
+            <a class="btn-secondary" th:href="@{/hfpi/{id}(id=${factory.id})}">📊 Voltar HFPI Defects</a>
+            <a class="btn-secondary" th:href="@{/}">🏠 Dashboard</a>
+        </div>
+
+        <div class="card">
+            <form method="get" th:action="@{/hfpi-factory/{id}(id=${factory.id})}" class="filters">
+                <div class="field">
+                    <label>FY</label>
+                    <select name="fy">
+                        <option value="" th:selected="${fy == null}">Todos</option>
+                        <option th:each="f : ${fyOptions}"
+                                th:value="${f}"
+                                th:text="${f}"
+                                th:selected="${fy == f}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Quarter</label>
+                    <select name="quarter">
+                        <option value="" th:selected="${quarter == null}">Todos</option>
+                        <option th:each="q : ${quarterOptions}"
+                                th:value="${q}"
+                                th:text="${q}"
+                                th:selected="${quarter == q}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn-secondary" type="submit">Filtrar</button>
+                </div>
+            </form>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>FY</th>
+                <th>Quarter</th>
+                <th>Month</th>
+                <th>Aprovados</th>
+                <th>Realizado</th>
+                <th style="width: 220px;">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${rows}">
+                <td th:text="${r.fy}"></td>
+                <td th:text="${r.quarter}"></td>
+                <td th:text="${r.month}"></td>
+                <td th:text="${r.hfpiAprovados}"></td>
+                <td th:text="${r.hfpiRealizado}"></td>
+                <td class="row-actions">
+                    <a class="btn-secondary" th:href="@{/hfpi-factory/edit/{id}(id=${r.id})}">✏️ Editar</a>
+
+                    <form th:action="@{/hfpi-factory/delete/{id}(id=${r.id})}" method="post" style="display:inline;">
+                        <button class="btn-danger" type="submit"
+                                onclick="return confirm('Deletar este registro?');">🗑️ Deletar</button>
+                    </form>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(rows)}">
+                <td colspan="6" style="text-align:center; opacity:0.7;">Sem registros.</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+</body>
+</html>

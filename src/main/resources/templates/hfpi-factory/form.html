@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('HFPI Factory')"></head>
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/hfpi-factory.css}">
+<body>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+        <h1>🏭 HFPI Factory</h1>
+
+        <p>Factory: <strong th:text="${factory.name}"></strong></p>
+
+        <div class="actions">
+            <a class="btn-secondary" th:href="@{/hfpi-factory/{id}(id=${factory.id})}">⬅ Voltar</a>
+            <a class="btn-secondary" th:href="@{/}">🏠 Dashboard</a>
+        </div>
+
+        <div class="card">
+            <form th:action="@{/hfpi-factory/save}" th:object="${hfpiFactory}" method="post">
+
+                <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{factory.id}">
+
+                <div class="grid">
+                    <div class="field">
+                        <label>FY (ex.: FY26)</label>
+                        <input type="text" th:field="*{fy}" placeholder="FY26" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Quarter (ex.: Q1)</label>
+                        <input type="text" th:field="*{quarter}" placeholder="Q1" required>
+                    </div>
+
+                    <div class="field">
+                        <label>Month (ex.: Jun)</label>
+                        <input type="text" th:field="*{month}" placeholder="Jun" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HFPI Aprovados</label>
+                        <input type="number" min="0" th:field="*{hfpiAprovados}" required>
+                    </div>
+
+                    <div class="field">
+                        <label>HFPI Realizado</label>
+                        <input type="number" min="0" th:field="*{hfpiRealizado}" required>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn-primary" type="submit">💾 Salvar</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
