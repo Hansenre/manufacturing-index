@@ -10,66 +10,86 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
-<div class="dashboard-header">
-    <h2>📊 HFPI 2.0 – Final Dashboard</h2>
-    <p>Consolidado: 60% HFPI Online + 40% HFPI Factory</p>
-</div>
-
-<!-- ================= FILTROS ================= -->
-<div class="filters">
-
-    <!-- 🔽 FACTORY -->
-    <div class="filter-group">
-        <label>Factory</label>
-        <select id="factorySelect" onchange="changeFactory(this.value)">
-            <option th:each="f : ${factories}"
-                    th:value="${f.id}"
-                    th:text="${f.name}"
-                    th:selected="${f.id == factoryId}">
-            </option>
-        </select>
+    <!-- ================= HEADER ================= -->
+    <div class="dashboard-header">
+        <h2>📊 HFPI 2.0 – Final Dashboard</h2>
+        <p>Consolidado: 60% HFPI Online + 40% HFPI Factory</p>
     </div>
 
-    <!-- 🔽 FY -->
-    <div class="filter-group">
-        <label for="fySelect">FY</label>
-        <select id="fySelect">
-            <option th:each="f : ${fyOptions}"
-                    th:value="${f}"
-                    th:text="${f}"
-                    th:selected="${f == fy}">
-            </option>
-        </select>
+    <!-- ================= FILTROS ================= -->
+    <div class="filters">
+
+        <!-- 🔽 FACTORY -->
+        <div class="filter-group">
+            <label>Factory</label>
+            <select id="factorySelect"
+                    onchange="onFactoryChange()">
+                <option th:each="f : ${factories}"
+                        th:value="${f.id}"
+                        th:text="${f.name}"
+                        th:selected="${f.id == factoryId}">
+                </option>
+            </select>
+        </div>
+
+        <!-- 🔽 FY -->
+        <div class="filter-group">
+            <label for="fySelect">FY</label>
+            <select id="fySelect"
+                    onchange="onFyChange()">
+                <option th:each="f : ${fyOptions}"
+                        th:value="${f}"
+                        th:text="${f}"
+                        th:selected="${f == fy}">
+                </option>
+            </select>
+        </div>
+
+        <!-- 🔽 QUARTER -->
+        <div class="filter-group">
+            <label for="quarterSelect">Quarter</label>
+            <select id="quarterSelect"
+                    onchange="onQuarterChange()">
+                <option th:each="q : ${quarterOptions}"
+                        th:value="${q}"
+                        th:text="${q}"
+                        th:selected="${q == quarter}">
+                </option>
+            </select>
+        </div>
+
+        <!-- 🔄 REFRESH -->
+        <div class="filter-group">
+            <button class="btn-primary" onclick="reloadDashboard()">
+                🔄 Refresh
+            </button>
+        </div>
+
+        <!-- 📄 PDF -->
+        <div class="filter-group">
+            <button class="btn btn-danger" onclick="exportPdf()">
+                📄 Export PDF
+            </button>
+        </div>
+    </div>
+	<div id="pdf-content">
+    <!-- ================= TÍTULO DO GRÁFICO ================= -->
+    <h2 id="chartTitle" class="chart-title">
+        HFPI 2.0 – Consolidated-Onlie/Factory
+    </h2>
+
+    <!-- ================= GRÁFICO ================= -->
+    <div class="chart-container">
+        <canvas id="hfpiChart"></canvas>
     </div>
 
-    <!-- 🔽 QUARTER -->
-    <div class="filter-group">
-        <label for="quarterSelect">Quarter</label>
-        <select id="quarterSelect">
-            <option th:each="q : ${quarterOptions}"
-                    th:value="${q}"
-                    th:text="${q}"
-                    th:selected="${q == quarter}">
-            </option>
-        </select>
-    </div>
-
-    <!-- 🔄 REFRESH -->
-    <div class="filter-group">
-        <button class="btn-primary" onclick="reloadDashboard()">
-            🔄 Refresh
-        </button>
-    </div>
-</div>
-
-<!-- ================= GRÁFICO ================= -->
-<div class="chart-container" style="height: 350px; width: 80%; margin: auto;">
-    <canvas id="hfpiChart"></canvas>
 </div>
 
 <!-- ================= CONTEXT ================= -->
@@ -77,23 +97,30 @@
     const factoryId = [[${factoryId}]];
 </script>
 
-<!-- ================= JS ================= -->
+<!-- ================= JS PRINCIPAL ================= -->
 <script src="/js/hfpi-dashboard-final.js"></script>
 
-<!-- ================= NAVIGATION ================= -->
+<!-- ================= CONTROLES ================= -->
 <script>
-function changeFactory(factoryId) {
-
+function onFactoryChange() {
+    const newFactoryId = document.getElementById("factorySelect").value;
     const fy = document.getElementById("fySelect").value;
     const quarter = document.getElementById("quarterSelect").value;
 
     window.location.replace(
-        `/hfpi/dashboard/final/${factoryId}?fy=${fy}&quarter=${quarter}`
+        `/hfpi/dashboard/final/${newFactoryId}?fy=${fy}&quarter=${quarter}`
     );
 }
 
-function reloadDashboard() {
+function onFyChange() {
+    reloadDashboard();
+}
 
+function onQuarterChange() {
+    reloadDashboard();
+}
+
+function reloadDashboard() {
     const fy = document.getElementById("fySelect").value;
     const quarter = document.getElementById("quarterSelect").value;
 

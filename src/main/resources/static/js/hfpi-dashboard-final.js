@@ -25,6 +25,9 @@ async function loadDashboard() {
     const data = await res.json();
 
     renderChart(data);
+	updateChartTitle();
+	
+
 }
 
 /* =====================================================
@@ -53,80 +56,165 @@ function renderChart(data) {
         type: 'bar',
         data: {
             labels: ['HFPI FINAL', 'HFPI ONLINE', 'HFPI FACTORY'],
-            datasets: [{
-                data: [finalV, online, factory],
-                backgroundColor: ['#1976d2', '#ef6c00', '#2e7d32']
-            }]
+			datasets: [{
+			    data: [finalV, online, factory],
+			    backgroundColor: ['#1976d2', '#ef6c00', '#2e7d32'],
+			    barThickness: 80,       // 👈 barras mais grossas
+			    borderRadius: 6
+			}]
+
         },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        callback: value => value + '%'
-                    }
-                }
-            },
-            plugins: {
-                legend: { display: false },
+		options: {
+		    indexAxis: 'y',
+		    responsive: true,
+		    maintainAspectRatio: false,
 
-                tooltip: {
-                    callbacks: {
-                        label: ctx => ctx.raw.toFixed(2) + '%'
-                    }
-                },
+			layout: {
+			    padding: {
+			        left: 60,   // espaço para labels HFPI
+			        right: 90,  // espaço para % + Bronze/Prata
+			        top: 20,
+			        bottom: 20
+			    }
+			},
 
-                datalabels: {
-                    anchor: 'end',
-                    align: 'right',
-                    formatter: value => value.toFixed(1) + '%',
-                    color: '#000',
-                    font: {
-                        weight: 'bold',
-                        size: 12
-                    }
-                },
+		    scales: {
+		        x: {
+		            min: 0,
+		            max: 100,
+		            grid: {
+		                color: '#e0e0e0'
+		            },
+		            ticks: {
+		                callback: v => v + '%',
+		                font: { size: 11 }
+		            }
+		        },
+		        y: {
+		            ticks: {
+		                font: {
+		                    size: 12,
+		                    weight: 'bold'
+		                },
+		                color: '#333'
+		            }
+		        }
+		    },
 
-                annotation: {
-                    annotations: {
-                        bronze: {
-                            type: 'line',
-                            scaleID: 'x',
-                            value: 94,
-                            borderColor: '#cd7f32',
-                            borderWidth: 2,
-                            label: {
-                                display: true,
-                                content: 'Bronze 94%',
-                                position: 'end',
-                                backgroundColor: '#cd7f32',
-                                color: '#fff'
-                            }
-                        },
-                        prata: {
-                            type: 'line',
-                            scaleID: 'x',
-                            value: 97,
-                            borderColor: '#c0c0c0',
-                            borderWidth: 2,
-                            label: {
-                                display: true,
-                                content: 'Prata 97%',
-                                position: 'end',
-                                backgroundColor: '#c0c0c0',
-                                color: '#000'
-                            }
-                        }
-                    }
-                }
-            }
-        }
+		    plugins: {
+		        legend: { display: false },
+
+		        tooltip: {
+		            callbacks: {
+		                label: ctx => ctx.raw.toFixed(2) + '%'
+		            }
+		        },
+
+		        datalabels: {
+		            anchor: 'end',
+		            align: 'right',
+		            offset: 6,
+		            formatter: v => v.toFixed(1) + '%',
+		            color: '#111',
+		            font: {
+		                weight: 'bold',
+		                size: 11
+		            }
+		        },
+
+				annotation: {
+				    annotations: {
+				        bronze: {
+				            type: 'line',
+				            scaleID: 'x',
+				            value: 94,
+				            borderColor: '#cd7f32',
+				            borderWidth: 2,
+				            label: {
+				                display: true,
+				                content: 'Bronze 94%',
+				                position: 'end',
+				                xAdjust: 8,
+				                yAdjust: -12,
+				                backgroundColor: '#cd7f32',
+				                color: '#fff',
+				                font: { size: 12 }
+				            }
+				        },
+				        prata: {
+				            type: 'line',
+				            scaleID: 'x',
+				            value: 97,
+				            borderColor: '#c0c0c0',
+				            borderWidth: 2,
+				            label: {
+				                display: true,
+				                content: 'Prata 97%',
+				                position: 'end',
+				                xAdjust: 8,
+				                yAdjust: 12,
+				                backgroundColor: '#c0c0c0',
+				                color: '#000',
+				                font: { size: 12 }
+				            }
+				        }
+				    }
+				}
+
+		    }
+		}
+
     });
 }
+
+function exportPdf() {
+
+    const element = document.getElementById("pdf-content");
+
+    const opt = {
+        margin:       0.5,
+        filename:     `HFPI_Final_${new Date().toISOString().slice(0,10)}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  {
+            scale: 2,
+            useCORS: true
+        },
+        jsPDF: {
+            unit: 'cm',
+            format: 'a4',
+            orientation: 'landscape'
+        }
+    };
+
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .save();
+}
+
+function updateChartTitle() {
+    const factorySelect = document.getElementById("factorySelect");
+    const fySelect = document.getElementById("fySelect");
+    const quarterSelect = document.getElementById("quarterSelect");
+
+    const factoryName =
+        factorySelect?.options[factorySelect.selectedIndex]?.text || "Factory";
+
+    const fy = fySelect?.value || "";
+    const quarter = quarterSelect?.value || "";
+
+    const title = `HFPI 2.0 – ${factoryName} | ${fy} ${quarter}`;
+
+    document.getElementById("chartTitle").innerText = title;
+}
+
+function onFactoryChange() {
+    const factoryId = document.getElementById("factorySelect").value;
+    window.location.href = `/hfpi/dashboard/final/${factoryId}`;
+}
+
+
+
 
 /* =====================================================
    EVENTS

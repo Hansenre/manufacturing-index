@@ -224,6 +224,36 @@ body {
        max-width: 520px;   /* 🔥 controla o tamanho da pizza */
        height: 360px;
    }
+   
+   .chart-container {
+       background: #fafafa;
+       border: 1px solid #ddd;
+       border-radius: 10px;
+
+       padding: 20px 30px;   /* 👈 padding interno maior */
+       height: 520px;        /* 👈 gráfico mais alto */
+       width: 100%;
+
+       box-sizing: border-box;
+   }
+   
+   .chart-container canvas {
+       width: 100% !important;
+       height: 100% !important;
+   }
+   
+   .chart-title {
+       text-align: center;
+       font-size: 22px;
+       font-weight: 600;
+       margin-bottom: 12px;
+
+       color: #2c2c2c;
+       letter-spacing: 0.5px;
+   }
+
+
+
 
 
 
