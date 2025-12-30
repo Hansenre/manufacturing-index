@@ -151,32 +151,57 @@ public class DefectDashboardController {
     }
     
     /* =====================================================
-    👟 ENDPOINT – Defeitos por Modelo
+    📊 ENDPOINT – Pareto 80/20 (Defeitos por MODELO)
     ===================================================== */
- @GetMapping("/models")
+ @GetMapping("/pareto/model")
  @ResponseBody
- public List<DefectCountDTO> defectByModel(
+ public List<DefectCountDTO> paretoByModel(
          @RequestParam Long factoryId,
          @RequestParam String fy,
-         @RequestParam String quarter) {
+         @RequestParam String quarter,
+         @RequestParam String modelName) {
 
      List<Object[]> raw =
-             eventRepository.countDefectsByModelRaw(factoryId, fy, quarter);
+             eventRepository.countDefectsParetoByModel(
+                     factoryId, fy, quarter, modelName
+             );
 
-     // consolida UNION (soma por modelo)
-     Map<String, Long> map = new LinkedHashMap<>();
+     // Já vem ordenado do maior para o menor
+     List<DefectCountDTO> result = new ArrayList<>();
 
      for (Object[] r : raw) {
-         String model = (String) r[0];
+         String defectName = (String) r[0];
          Long count = ((Number) r[1]).longValue();
-         map.merge(model, count, Long::sum);
+
+         result.add(new DefectCountDTO(defectName, count));
      }
 
-     return map.entrySet()
-             .stream()
-             .map(e -> new DefectCountDTO(e.getKey(), e.getValue()))
-             .toList();
+     return result;
  }
+ 
+ /* =====================================================
+ 👟 Defeitos por Modelo (AJAX) — CORRIGIDO
+ ===================================================== */
+@GetMapping("/data/models")
+@ResponseBody
+public List<DefectCountDTO> defectsByModel(
+        @RequestParam Long factoryId,
+        @RequestParam String fy,
+        @RequestParam String quarter) {
 
+    List<Object[]> raw =
+            eventRepository.countDefectsByModelRaw(factoryId, fy, quarter);
+
+    List<DefectCountDTO> result = new ArrayList<>();
+
+    for (Object[] r : raw) {
+        String modelName = (String) r[0]; // model_name
+        Long count = ((Number) r[1]).longValue();
+
+        result.add(new DefectCountDTO(modelName, count));
+    }
+
+    return result;
+}
 
 }
