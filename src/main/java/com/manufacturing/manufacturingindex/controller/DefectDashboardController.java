@@ -105,7 +105,7 @@ public class DefectDashboardController {
             @RequestParam String quarter) {
 
         List<Object[]> raw =
-                eventRepository.countDefectsByFYAndQuarterRaw(factoryId, fy, quarter);
+                eventRepository.countDefectsParetoByType(factoryId, fy, quarter);
 
         // 🔹 CONSOLIDA UNION ALL (mesmo defeito pode vir 3x)
         Map<String, Long> consolidated = new LinkedHashMap<>();
