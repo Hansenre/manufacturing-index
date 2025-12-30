@@ -17,7 +17,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     List<HfpiEvent> findByFactory(Factory factory);
 
     /* =====================================================
-       🍕 Defeitos por descrição
+       🍕 Defeitos por descrição (MANTIDO – SEM FY/QUARTER)
        ===================================================== */
     @Query("""
         SELECT d.name, COUNT(d)
@@ -46,14 +46,15 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     List<Object[]> countDefectsByDescription(@Param("factoryId") Long factoryId);
 
     /* =====================================================
-       📊 Defeitos por severidade
+       📊 Defeitos por severidade (MANTIDO)
        ===================================================== */
     @Query("""
         SELECT d.name, i.rating, COUNT(d)
         FROM HfpiEvent e
         JOIN e.items i
         JOIN i.defect1 d
-        WHERE e.factory.id = :factoryId AND i.rating <> 'BOM'
+        WHERE e.factory.id = :factoryId
+          AND i.rating <> 'BOM'
         GROUP BY d.name, i.rating
 
         UNION ALL
@@ -61,7 +62,8 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         FROM HfpiEvent e
         JOIN e.items i
         JOIN i.defect2 d
-        WHERE e.factory.id = :factoryId AND i.rating <> 'BOM'
+        WHERE e.factory.id = :factoryId
+          AND i.rating <> 'BOM'
         GROUP BY d.name, i.rating
 
         UNION ALL
@@ -69,13 +71,17 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         FROM HfpiEvent e
         JOIN e.items i
         JOIN i.defect3 d
-        WHERE e.factory.id = :factoryId AND i.rating <> 'BOM'
+        WHERE e.factory.id = :factoryId
+          AND i.rating <> 'BOM'
         GROUP BY d.name, i.rating
     """)
     List<Object[]> countDefectsBySeverity(@Param("factoryId") Long factoryId);
 
     /* =====================================================
        📈 Defeitos por FY + Quarter
+       ✅ FY MANTIDO
+       ✅ Quarter ISOLADO
+       ✅ MODERADO + SEVERO
        ===================================================== */
     @Query(value = """
         SELECT d.name AS defectName, COUNT(*) AS count
@@ -85,6 +91,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         WHERE e.factory_id = :factoryId
           AND e.fy = :fy
           AND e.quarter = :quarter
+          AND i.rating IN ('MODERADO','SEVERO')
         GROUP BY d.name
 
         UNION ALL
@@ -95,6 +102,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         WHERE e.factory_id = :factoryId
           AND e.fy = :fy
           AND e.quarter = :quarter
+          AND i.rating IN ('MODERADO','SEVERO')
         GROUP BY d.name
 
         UNION ALL
@@ -105,6 +113,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
         WHERE e.factory_id = :factoryId
           AND e.fy = :fy
           AND e.quarter = :quarter
+          AND i.rating IN ('MODERADO','SEVERO')
         GROUP BY d.name
     """, nativeQuery = true)
     List<Object[]> countDefectsByFYAndQuarterRaw(
@@ -114,7 +123,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     );
 
     /* =====================================================
-       🔽 FY / Quarter
+       🔽 FY / Quarter (MANTIDO)
        ===================================================== */
     @Query("SELECT DISTINCT e.fy FROM HfpiEvent e ORDER BY e.fy DESC")
     List<String> findDistinctFYs();
@@ -128,7 +137,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     List<String> findQuartersByFY(@Param("fy") String fy);
 
     /* =====================================================
-       👟 MODELOS DISPONÍVEIS (USADO PELO SELECT)
+       👟 MODELOS DISPONÍVEIS (MANTIDO)
        ===================================================== */
     @Query(value = """
         SELECT e.model_name AS modelName, COUNT(*) AS count
@@ -147,7 +156,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     );
 
     /* =====================================================
-       📊 PARETO 80/20 – Defeitos por MODELO
+       📊 PARETO 80/20 – Defeitos por MODELO (MANTIDO)
        ===================================================== */
     @Query(value = """
         SELECT defect_name, SUM(cnt) AS total_count
@@ -193,4 +202,47 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
             @Param("quarter") String quarter,
             @Param("modelName") String modelName
     );
+
+    /* =====================================================
+    HFPI ONLINE – ITENS (MODERADO + SEVERO)
+    FY + QUARTER ISOLADO
+    ===================================================== */
+    @Query(value = """
+    	    SELECT
+    	        COUNT(i.id) AS total_itens,
+    	        SUM(CASE WHEN i.rating IN ('MODERADO','SEVERO') THEN 1 ELSE 0 END) AS itens_ruins,
+    	        ROUND(
+    	            (COUNT(i.id) - SUM(CASE WHEN i.rating IN ('MODERADO','SEVERO') THEN 1 ELSE 0 END))
+    	            * 100.0 / NULLIF(COUNT(i.id), 0),
+    	            2
+    	        ) AS hfpi_online_percent
+    	    FROM hfpi_events e
+    	    JOIN hfpi_items i ON i.event_id = e.id
+    	    WHERE e.factory_id = :factoryId
+    	      AND e.fy = :fy
+    	      AND e.quarter = :quarter
+    	""", nativeQuery = true)
+    	Object[] getHfpiOnlinePercent(
+    	        @Param("factoryId") Long factoryId,
+    	        @Param("fy") String fy,
+    	        @Param("quarter") String quarter
+    	);
+    
+    @Query(value = """
+    	    SELECT
+    	        COUNT(i.id) AS total_itens,
+    	        SUM(CASE WHEN i.rating <> 'BOM' THEN 1 ELSE 0 END) AS itens_ruins
+    	    FROM hfpi_events e
+    	    JOIN hfpi_items i ON i.event_id = e.id
+    	    WHERE e.factory_id = :factoryId
+    	      AND e.fy = :fy
+    	      AND e.quarter = :quarter
+    	""", nativeQuery = true)
+    	Object[] getHfpiOnlineByItems(
+    	        @Param("factoryId") Long factoryId,
+    	        @Param("fy") String fy,
+    	        @Param("quarter") String quarter
+    	);
+
+
 }

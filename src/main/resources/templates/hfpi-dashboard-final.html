@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <meta charset="UTF-8">
+	    <title>HFPI Dashboard Final</title>
+
+	    <!-- CSS padrão do HFPI -->
+	    <link rel="stylesheet" th:href="@{/css/hfpi-defects.css}">
+
+	    <!-- Chart.js -->
+	    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+	    <!-- Plugin DataLabels -->
+	    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+		
+		<!-- 🔥 Annotation Plugin -->
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
+	</head>
+
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<div class="dashboard-header">
+    <h2>📊 HFPI 2.0 – Final Dashboard</h2>
+    <p>Consolidado: 60% HFPI Online + 40% HFPI Factory</p>
+</div>
+
+<!-- ================= FILTROS ================= -->
+<div class="filters">
+    <div class="filter-group">
+        <label for="fySelect">FY</label>
+        <select id="fySelect"></select>
+    </div>
+
+    <div class="filter-group">
+        <label for="quarterSelect">Quarter</label>
+        <select id="quarterSelect"></select>
+    </div>
+
+    <div class="filter-group">
+        <button class="btn-primary" onclick="loadDashboard()">
+            🔄 Refresh
+        </button>
+    </div>
+</div>
+
+<!-- ================= GRÁFICO ================= -->
+<div class="chart-container" style="height: 350px; width: 80%; margin: auto;">
+    <canvas id="hfpiChart"></canvas>
+</div>
+
+<!-- ================= JS ================= -->
+<script src="/js/hfpi-dashboard-final.js"></script>
+
+</body>
+</html>

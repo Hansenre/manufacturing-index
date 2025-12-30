@@ -1,11 +1,13 @@
 package com.manufacturing.manufacturingindex.repository;
 
-import com.manufacturing.manufacturingindex.model.HfpiFactory;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import com.manufacturing.manufacturingindex.model.HfpiFactory;
 
 public interface HfpiFactoryRepository extends JpaRepository<HfpiFactory, Long> {
 
@@ -47,4 +49,30 @@ public interface HfpiFactoryRepository extends JpaRepository<HfpiFactory, Long> 
         ORDER BY h.quarter ASC
     """)
     List<String> listQuarter(@Param("factoryId") Long factoryId, @Param("fy") String fy);
+    
+    Optional<HfpiFactory> findTopByFactoryIdOrderByFyDescQuarterDescIdDesc(Long factoryId);
+    
+    @Query(value = """
+    	    SELECT
+    	        COALESCE(SUM(hfpi_aprovados), 0) AS aprovados,
+    	        COALESCE(SUM(hfpi_realizado), 0) AS realizados,
+    	        ROUND(
+    	            COALESCE(SUM(hfpi_aprovados), 0) * 100.0 /
+    	            NULLIF(COALESCE(SUM(hfpi_realizado), 0), 0),
+    	            2
+    	        ) AS hfpi_factory_percent
+    	    FROM hfpi_factory
+    	    WHERE factory_id = :factoryId
+    	      AND fy = :fy
+    	      AND quarter = :quarter
+    	""", nativeQuery = true)
+    	Object[] getHfpiFactoryPercent(
+    	        @Param("factoryId") Long factoryId,
+    	        @Param("fy") String fy,
+    	        @Param("quarter") String quarter
+    	);
+
+
+
+
 }

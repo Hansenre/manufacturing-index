@@ -123,4 +123,28 @@ public class HfpiFactoryController {
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
+    
+ // ============================
+ // ENDPOINTS JSON (Dashboard)
+ // ============================
+
+ @GetMapping("/api/fy/{factoryId}")
+ @ResponseBody
+ public List<String> apiListFy(@PathVariable Long factoryId) {
+     return hfpiFactoryRepo.listFy(factoryId);
+ }
+
+ @GetMapping("/api/quarter/{factoryId}")
+ @ResponseBody
+ public List<String> apiListQuarter(
+         @PathVariable Long factoryId,
+         @RequestParam(required = false) String fy) {
+
+     return hfpiFactoryRepo.listQuarter(factoryId, fy);
+ }
+ 
+ 
+ 
+ 
+
 }
