@@ -1,8 +1,7 @@
-// ================================
-// FACTORY ID (VEM DA URL)
-// /hfpi/dashboard/final/{id}
-// ================================
 const factoryId = window.location.pathname.split("/").pop();
+
+Chart.register(ChartDataLabels);
+Chart.register(window['chartjs-plugin-annotation']);
 
 
 let chart;
@@ -55,7 +54,10 @@ async function loadDashboard() {
 function renderChart(data) {
     const ctx = document.getElementById("hfpiChart");
 
-    if (chart) chart.destroy();
+    if (chart) {
+        chart.destroy();
+        chart = null;
+    }
 
     const online  = Number(data.hfpiOnline ?? 0) * 100;
     const factory = Number(data.hfpiFactory ?? 0) * 100;
@@ -66,44 +68,87 @@ function renderChart(data) {
         data: {
             labels: ['HFPI FINAL', 'HFPI ONLINE', 'HFPI FACTORY'],
             datasets: [{
-				data: [finalV, online, factory],
+                data: [finalV, online, factory],
                 backgroundColor: ['#1976d2', '#ef6c00', '#2e7d32']
             }]
         },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        callback: value => value + '%'
-                    }
-                }
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: ctx => ctx.raw.toFixed(2) + '%'
-                    }
-                }
-            }
-        }
+		options: {
+		    indexAxis: 'y',
+		    responsive: true,
+		    maintainAspectRatio: false,
+		    scales: {
+		        x: {
+		            min: 0,
+		            max: 100,
+		            ticks: {
+		                callback: value => value + '%'
+		            }
+		        }
+		    },
+		    plugins: {
+		        legend: { display: false },
+
+		        tooltip: {
+		            callbacks: {
+		                label: ctx => ctx.raw.toFixed(2) + '%'
+		            }
+		        },
+
+		        datalabels: {
+		            anchor: 'end',
+		            align: 'right',
+		            formatter: value => value.toFixed(1) + '%',
+		            color: '#000',
+		            font: {
+		                weight: 'bold',
+		                size: 12
+		            }
+		        },
+
+		        // 🥉🥈 LINHAS FIXAS
+		        annotation: {
+		            annotations: {
+		                bronze: {
+		                    type: 'line',
+		                    scaleID: 'x',
+		                    value: 94,
+		                    borderColor: '#cd7f32',
+		                    borderWidth: 2,
+		                    label: {
+		                        display: true,
+		                        content: 'Bronze 94%',
+		                        position: 'end',
+		                        backgroundColor: '#cd7f32',
+		                        color: '#fff'
+		                    }
+		                },
+		                prata: {
+		                    type: 'line',
+		                    scaleID: 'x',
+		                    value: 97,
+		                    borderColor: '#c0c0c0',
+		                    borderWidth: 2,
+		                    label: {
+		                        display: true,
+		                        content: 'Prata 97%',
+		                        position: 'end',
+		                        backgroundColor: '#c0c0c0',
+		                        color: '#000'
+		                    }
+		                }
+		            }
+		        }
+		    }
+		}
     });
 }
-
 
 // INIT
 document.addEventListener("DOMContentLoaded", async () => {
     await loadFy();
     await loadQuarter();
 
-    // garante que existe quarter selecionado
     if (document.getElementById("quarterSelect").value) {
         await loadDashboard();
     }
 });
-
