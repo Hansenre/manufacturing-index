@@ -1,41 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>HFPI Defects Dashboard</title>
 
-    <!-- CSS -->
     <link rel="stylesheet" href="/css/hfpi-defects.css">
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-    <!-- Chart DataLabels -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 
 <body>
 
-	
-	<nav class="breadcrumb">
-	    <a th:href="@{/}">🏭 Manufacturing Index</a>
-	    <span>›</span>
+<nav class="breadcrumb">
+    <a th:href="@{/}">🏭 Manufacturing Index</a> ›
+    <a th:href="@{/hfpi/{id}(id=${factory.id})}">HFPI</a> ›
+    <span th:text="${factory.name}"></span> ›
+    <span id="breadcrumbFYQ"></span>
+</nav>
 
-	    <a th:href="@{/hfpi/{id}(id=${factory.id})}">HFPI</a>
-	    <span>›</span>
-
-	    <span th:text="${factory.name}">Factory</span>
-	    <span>›</span>
-
-	    <span id="breadcrumbFYQ" class="current">
-	        FY – Q
-	    </span>
-	</nav>
-
-
-
-
-<!-- FILTROS -->
+<!-- ================= FILTROS ================= -->
 <div class="filters-card">
     <label>FY:</label>
     <select id="fySelect"></select>
@@ -44,173 +28,110 @@
     <select id="quarterSelect"></select>
 </div>
 
-<!-- TOGGLE -->
+<!-- ================= TOGGLE ================= -->
 <div class="view-toggle">
-    <button id="btnPareto" class="active">📊 Por Tipo</button>
-    <button id="btnModel">👟 Por Modelo</button>
+    <button id="btnType" class="btn-primary">📊 Por Tipo</button>
+    <button id="btnModel" class="btn-secondary">👟 Por Modelo</button>
 </div>
 
-<hr>
+<!-- ================= POR TIPO ================= -->
+<section id="typeSection" style="margin-top:20px;">
 
-<!-- ===============================
-     VISÃO POR TIPO
-     =============================== -->
-<div class="charts-column" id="typeView">
+    <h3>Pareto – Defeitos por Tipo (80/20)</h3>
 
-    <div class="chart-card">
-        <h3>Defeitos por Tipo</h3>
-        <div class="pie-wrapper">
-            <canvas id="defectPie"></canvas>
-        </div>
+    <div class="chart-box">
+        <canvas id="defectPareto"></canvas>
     </div>
 
-    <div class="chart-card">
-        <h3>Pareto – Defeitos (80/20)</h3>
-        <div class="bar-wrapper">
-            <canvas id="defectPareto"></canvas>
-        </div>
+</section>
+
+<!-- ================= POR MODELO ================= -->
+<section id="modelSection" style="display:none; margin-top:20px;">
+
+    <label>Models:</label>
+    <select id="modelSelect" size="6" style="min-width:220px;"></select>
+    <small>Selecione 1 modelo</small>
+
+    <h3 style="margin-top:20px;">Pareto – Defeitos por Modelo (80/20)</h3>
+
+    <div style="height:420px;">
+        <canvas id="modelChart"></canvas>
     </div>
 
-</div>
+</section>
 
-<!-- ===============================
-     VISÃO POR MODELO
-     =============================== -->
-<div class="charts-column" id="modelView" style="display:none">
-
-    <div class="chart-card">
-        <h3>Defeitos por Modelo</h3>
-        <div class="bar-wrapper">
-            <canvas id="modelBar"></canvas>
-        </div>
-    </div>
-
-</div>
-
-<script>
+<script th:inline="javascript">
 Chart.register(ChartDataLabels);
 
-let pieChart = null;
+const factoryId = [[${factory.id}]];
+
+/* ================= ELEMENTOS ================= */
+const fySelect = document.getElementById("fySelect");
+const quarterSelect = document.getElementById("quarterSelect");
+const breadcrumbFYQ = document.getElementById("breadcrumbFYQ");
+
+const btnType = document.getElementById("btnType");
+const btnModel = document.getElementById("btnModel");
+
+const typeSection = document.getElementById("typeSection");
+const modelSection = document.getElementById("modelSection");
+
+const modelSelect = document.getElementById("modelSelect");
+const modelCanvas = document.getElementById("modelChart");
+const defectPareto = document.getElementById("defectPareto");
+
+/* ================= CHARTS ================= */
 let paretoChart = null;
 let modelChart = null;
 
-/* ===============================
-   LOAD FY
-   =============================== */
+/* ================= FY / QUARTER ================= */
 function loadFYs() {
     fetch("/hfpi/defects/fys")
-        .then(res => res.json())
+        .then(r => r.json())
         .then(fys => {
-            const fySelect = document.getElementById("fySelect");
             fySelect.innerHTML = "";
-            fys.forEach(fy => {
-                const opt = document.createElement("option");
-                opt.value = fy;
-                opt.textContent = fy;
-                fySelect.appendChild(opt);
-            });
+            fys.forEach((fy, i) =>
+                fySelect.add(new Option(fy, fy, i === 0, i === 0))
+            );
             loadQuarters();
         });
 }
 
-/* ===============================
-   LOAD QUARTERS
-   =============================== */
 function loadQuarters() {
-    const fy = fySelect.value;
-
-    fetch(`/hfpi/defects/quarters?fy=${fy}`)
-        .then(res => res.json())
-        .then(quarters => {
+    fetch(`/hfpi/defects/quarters?fy=${fySelect.value}`)
+        .then(r => r.json())
+        .then(qs => {
             quarterSelect.innerHTML = "";
-            quarters.forEach(q => {
-                const opt = document.createElement("option");
-                opt.value = q;
-                opt.textContent = q;
-                quarterSelect.appendChild(opt);
-            });
-            loadDefectData();
-			updateBreadcrumbFYQ();
-
+            qs.forEach((q, i) =>
+                quarterSelect.add(new Option(q, q, i === 0, i === 0))
+            );
+            breadcrumbFYQ.textContent = `${fySelect.value} ${quarterSelect.value}`;
+            loadTypePareto();
         });
 }
 
-/* ===============================
-   DATA POR TIPO
-   =============================== */
-   function updateBreadcrumbFYQ() {
-       const fy = document.getElementById("fySelect").value;
-       const quarter = document.getElementById("quarterSelect").value;
-
-       const el = document.getElementById("breadcrumbFYQ");
-
-       if (fy && quarter) {
-           el.textContent = fy + " " + quarter;
-       }
-   }
-
-   
-function loadDefectData() {
-
-    const fy = fySelect.value;
-    const quarter = quarterSelect.value;
-
-    fetch(`/hfpi/defects/data?factoryId=1&fy=${fy}&quarter=${quarter}`)
-        .then(res => res.json())
+/* ================= PARETO POR TIPO ================= */
+function loadTypePareto() {
+    fetch(`/hfpi/defects/data?factoryId=${factoryId}&fy=${fySelect.value}&quarter=${quarterSelect.value}`)
+        .then(r => r.json())
         .then(data => {
-
-            if (!data || data.length === 0) return;
+            if (!data.length) return;
 
             data.sort((a, b) => b.count - a.count);
 
             const labels = data.map(d => d.defectName);
             const values = data.map(d => d.count);
 
-            updatePie(labels, values);
-            updatePareto(labels, values);
-			updateBreadcrumbFYQ();
-
-			
+            renderTypePareto(labels, values);
         });
 }
 
-/* ===============================
-   🍕 PIE
-   =============================== */
-function updatePie(labels, values) {
-
-    if (pieChart) pieChart.destroy();
-
-    pieChart = new Chart(defectPie, {
-        type: "pie",
-        data: { labels, datasets: [{ data: values }] },
-        options: {
-            plugins: {
-                legend: { position: "bottom" },
-                datalabels: {
-                    color: "#fff",
-                    font: { weight: "bold" },
-                    formatter: v => v
-                }
-            }
-        }
-    });
-}
-
-/* ===============================
-   📈 PARETO
-   =============================== */
-function updatePareto(labels, values) {
-
+function renderTypePareto(labels, values) {
     if (paretoChart) paretoChart.destroy();
 
-    const total = values.reduce((a, b) => a + b, 0);
     let acc = 0;
-
-    const perc = values.map(v => {
-        acc += v;
-        return ((acc / total) * 100).toFixed(1);
-    });
+    const total = values.reduce((a, b) => a + b, 0);
+    const perc = values.map(v => ((acc += v) / total * 100).toFixed(1));
 
     paretoChart = new Chart(defectPareto, {
         data: {
@@ -220,20 +141,24 @@ function updatePareto(labels, values) {
                     type: "bar",
                     label: "Quantidade",
                     data: values,
-                    backgroundColor: "#3b82f6",
-                    yAxisID: "y"
+                    backgroundColor: "#60a5fa",
+                    datalabels: {
+                        anchor: "end",
+                        align: "right",
+                        formatter: v => v
+                    }
                 },
                 {
                     type: "line",
                     label: "% Acumulado",
                     data: perc,
-                    borderColor: "#ef4444",
-                    tension: 0.3,
                     yAxisID: "y1",
+                    borderColor: "#f43f5e",
+                    tension: 0.3,
                     datalabels: {
-                        formatter: v => v + "%",
-                        color: "#ef4444",
-                        align: "right"
+                        anchor: "end",
+                        align: "top",
+                        formatter: v => `${v}%`
                     }
                 }
             ]
@@ -241,7 +166,6 @@ function updatePareto(labels, values) {
         options: {
             indexAxis: "y",
             scales: {
-                y: { beginAtZero: true },
                 y1: {
                     beginAtZero: true,
                     max: 100,
@@ -253,76 +177,119 @@ function updatePareto(labels, values) {
     });
 }
 
-/* ===============================
-   👟 MODELO
-   =============================== */
-function loadModelData() {
-
-    const fy = fySelect.value;
-    const quarter = quarterSelect.value;
-
-    fetch(`/hfpi/defects/models?factoryId=1&fy=${fy}&quarter=${quarter}`)
-        .then(res => res.json())
+/* ================= POR MODELO ================= */
+function loadModels() {
+    fetch(`/hfpi/defects/data/models?factoryId=${factoryId}&fy=${fySelect.value}&quarter=${quarterSelect.value}`)
+        .then(r => r.json())
         .then(data => {
-
-            if (!data || data.length === 0) return;
-
-            const labels = data.map(d => d.defectName);
-            const values = data.map(d => d.count);
-
-            if (modelChart) modelChart.destroy();
-
-            modelChart = new Chart(modelBar, {
-                type: "bar",
-                data: {
-                    labels,
-                    datasets: [{
-                        label: "Quantidade de Defeitos",
-                        data: values,
-                        backgroundColor: "#22c55e"
-                    }]
-                },
-                options: {
-                    indexAxis: "y",
-                    scales: {
-                        x: { beginAtZero: true }
-                    }
-                }
-            });
+            modelSelect.innerHTML = "";
+            data.forEach(d =>
+                modelSelect.add(new Option(d.defectName, d.defectName))
+            );
         });
 }
 
-/* ===============================
-   TOGGLE
-   =============================== */
-btnPareto.onclick = () => {
-    typeView.style.display = "flex";
-    modelView.style.display = "none";
-    btnPareto.classList.add("active");
-    btnModel.classList.remove("active");
+function loadParetoByModel(model) {
+    fetch(`/hfpi/defects/pareto/model?factoryId=${factoryId}&fy=${fySelect.value}&quarter=${quarterSelect.value}&modelName=${encodeURIComponent(model)}`)
+        .then(r => r.json())
+        .then(renderModelPareto);
+}
+
+function renderModelPareto(data) {
+    if (!data.length) return;
+
+    data.sort((a, b) => b.count - a.count);
+
+    const labels = [];
+    const values = [];
+    const cumulative = [];
+
+    const total = data.reduce((s, d) => s + d.count, 0);
+    let acc = 0;
+
+    data.forEach(d => {
+        labels.push(d.defectName);
+        values.push(d.count);
+        acc += d.count;
+        cumulative.push(((acc / total) * 100).toFixed(1));
+    });
+
+    const colors = cumulative.map(p => p <= 80 ? "#ef4444" : "#22c55e");
+
+    if (modelChart) modelChart.destroy();
+
+    modelChart = new Chart(modelCanvas, {
+        data: {
+            labels,
+            datasets: [
+                {
+                    type: "bar",
+                    label: "Quantidade",
+                    data: values,
+                    backgroundColor: colors,
+                    datalabels: {
+                        anchor: "end",
+                        align: "right",
+                        formatter: v => v
+                    }
+                },
+                {
+                    type: "line",
+                    label: "% Acumulado",
+                    data: cumulative,
+                    yAxisID: "y1",
+                    borderColor: "#2563eb",
+                    tension: 0.3,
+                    datalabels: {
+                        anchor: "end",
+                        align: "top",
+                        formatter: v => `${v}%`
+                    }
+                }
+            ]
+        },
+        options: {
+            indexAxis: "y",
+            maintainAspectRatio: false,
+            scales: {
+                y1: {
+                    beginAtZero: true,
+                    max: 100,
+                    position: "right",
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+}
+
+/* ================= EVENTS ================= */
+btnType.onclick = () => {
+    btnType.className = "btn-primary";
+    btnModel.className = "btn-secondary";
+    typeSection.style.display = "block";
+    modelSection.style.display = "none";
 };
 
 btnModel.onclick = () => {
-    typeView.style.display = "none";
-    modelView.style.display = "flex";
-    btnModel.classList.add("active");
-    btnPareto.classList.remove("active");
-    loadModelData();
+    btnModel.className = "btn-primary";
+    btnType.className = "btn-secondary";
+    typeSection.style.display = "none";
+    modelSection.style.display = "block";
+    loadModels();
 };
 
-/* ===============================
-   INIT
-   =============================== */
-document.addEventListener("DOMContentLoaded", () => {
-    loadFYs();
-    fySelect.onchange = loadQuarters;
-    quarterSelect.onchange = () => {
-        loadDefectData();
-        if (btnModel.classList.contains("active")) {
-            loadModelData();
-        }
-    };
-});
+modelSelect.onchange = () => {
+    if (modelSelect.value) loadParetoByModel(modelSelect.value);
+};
+
+fySelect.onchange = loadQuarters;
+quarterSelect.onchange = () => {
+    loadTypePareto();
+    if (modelSection.style.display === "block") loadModels();
+};
+
+loadFYs();
 </script>
 
 </body>
