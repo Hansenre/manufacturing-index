@@ -59,13 +59,22 @@ public class HfpiController {
     }
 
     /* =========================
-       LISTAR
+       LISTAR HFPI (POR FÁBRICA)
        ========================= */
     @GetMapping("/{factoryId}")
     public String list(@PathVariable Long factoryId, Model model) {
+
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
+
+        List<HfpiEvent> events = eventRepo.findByFactory(factory);
+
         model.addAttribute("factory", factory);
-        model.addAttribute("events", eventRepo.findByFactory(factory));
+        model.addAttribute("factoryId", factoryId);
+        model.addAttribute("events", events);
+
+        // 🔽 ESSENCIAL PARA O SELECT DE FÁBRICAS
+        model.addAttribute("factories", factoryRepo.findAll());
+
         return "hfpi/list";
     }
 
@@ -85,6 +94,7 @@ public class HfpiController {
 
         model.addAttribute("hfpiEvent", event);
         model.addAttribute("factory", factory);
+        model.addAttribute("factories", factoryRepo.findAll());
         model.addAttribute("defectTypes", defectTypeRepo.findAll());
 
         return "hfpi/form";
@@ -158,10 +168,14 @@ public class HfpiController {
        ========================= */
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id, Model model) {
+
         HfpiEvent event = eventRepo.findById(id).orElseThrow();
+
         model.addAttribute("hfpiEvent", event);
         model.addAttribute("factory", event.getFactory());
+        model.addAttribute("factories", factoryRepo.findAll());
         model.addAttribute("defectTypes", defectTypeRepo.findAll());
+
         return "hfpi/form";
     }
 
@@ -189,9 +203,12 @@ public class HfpiController {
        ========================= */
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
+
         HfpiEvent event = eventRepo.findById(id).orElseThrow();
         Long factoryId = event.getFactory().getId();
+
         eventRepo.delete(event);
+
         return "redirect:/hfpi/" + factoryId;
     }
 }

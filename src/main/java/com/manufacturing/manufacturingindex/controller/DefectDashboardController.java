@@ -26,7 +26,7 @@ public class DefectDashboardController {
     }
 
     /* =====================================================
-       📄 PÁGINA DO DASHBOARD (MANTIDA)
+       📄 PÁGINA DO DASHBOARD (COM SELETOR DE FÁBRICA)
        ===================================================== */
     @GetMapping("/{factoryId}")
     public String defectDashboard(
@@ -37,7 +37,16 @@ public class DefectDashboardController {
                 .findById(factoryId)
                 .orElseThrow();
 
-        /* 🍕 PIZZA – Defeitos por descrição */
+        /* =====================================================
+           🔽 NOVO — SELETOR DE FÁBRICAS
+           ===================================================== */
+        model.addAttribute("factory", factory);
+        model.addAttribute("factoryId", factoryId);
+        model.addAttribute("factories", factoryRepository.findAll());
+
+        /* =====================================================
+           🍕 PIZZA – Defeitos por descrição
+           ===================================================== */
         List<Object[]> rawPie =
                 eventRepository.countDefectsByDescription(factoryId);
 
@@ -49,7 +58,9 @@ public class DefectDashboardController {
             pieValues.add(((Number) row[1]).longValue());
         }
 
-        /* 📊 BARRA EMPILHADA – Defeitos por severidade */
+        /* =====================================================
+           📊 BARRA EMPILHADA – Defeitos por severidade
+           ===================================================== */
         List<Object[]> rawSeverity =
                 eventRepository.countDefectsBySeverity(factoryId);
 
@@ -81,8 +92,6 @@ public class DefectDashboardController {
             stackedSevero.add(e.getValue()[2]);
         }
 
-        model.addAttribute("factory", factory);
-
         model.addAttribute("pieLabels", pieLabels);
         model.addAttribute("pieValues", pieValues);
 
@@ -95,7 +104,7 @@ public class DefectDashboardController {
     }
 
     /* =====================================================
-       🔹 ENDPOINT AJAX (FY + Quarter) — CORRIGIDO
+       🔹 ENDPOINT AJAX – Pareto por TIPO (FY + Quarter)
        ===================================================== */
     @GetMapping("/data")
     @ResponseBody
@@ -107,31 +116,25 @@ public class DefectDashboardController {
         List<Object[]> raw =
                 eventRepository.countDefectsParetoByType(factoryId, fy, quarter);
 
-        // 🔹 CONSOLIDA UNION ALL (mesmo defeito pode vir 3x)
         Map<String, Long> consolidated = new LinkedHashMap<>();
 
         for (Object[] r : raw) {
             String defectName = (String) r[0];
             Long count = ((Number) r[1]).longValue();
-
             consolidated.merge(defectName, count, Long::sum);
         }
 
-        // 🔹 CONVERTE PARA DTO (SEM QUEBRAR O FRONT)
         List<DefectCountDTO> result = new ArrayList<>();
 
         for (Map.Entry<String, Long> e : consolidated.entrySet()) {
-            result.add(new DefectCountDTO(
-                    e.getKey(),
-                    e.getValue()
-            ));
+            result.add(new DefectCountDTO(e.getKey(), e.getValue()));
         }
 
         return result;
     }
 
     /* =====================================================
-       🔽 FY DISPONÍVEIS (NOVO)
+       🔽 FY DISPONÍVEIS
        ===================================================== */
     @GetMapping("/fys")
     @ResponseBody
@@ -140,7 +143,7 @@ public class DefectDashboardController {
     }
 
     /* =====================================================
-       🔽 QUARTERS POR FY (NOVO)
+       🔽 QUARTERS POR FY
        ===================================================== */
     @GetMapping("/quarters")
     @ResponseBody
@@ -149,59 +152,57 @@ public class DefectDashboardController {
 
         return eventRepository.findQuartersByFY(fy);
     }
-    
+
     /* =====================================================
-    📊 ENDPOINT – Pareto 80/20 (Defeitos por MODELO)
-    ===================================================== */
- @GetMapping("/pareto/model")
- @ResponseBody
- public List<DefectCountDTO> paretoByModel(
-         @RequestParam Long factoryId,
-         @RequestParam String fy,
-         @RequestParam String quarter,
-         @RequestParam String modelName) {
+       📊 Pareto 80/20 – Defeitos por MODELO
+       ===================================================== */
+    @GetMapping("/pareto/model")
+    @ResponseBody
+    public List<DefectCountDTO> paretoByModel(
+            @RequestParam Long factoryId,
+            @RequestParam String fy,
+            @RequestParam String quarter,
+            @RequestParam String modelName) {
 
-     List<Object[]> raw =
-             eventRepository.countDefectsParetoByModel(
-                     factoryId, fy, quarter, modelName
-             );
+        List<Object[]> raw =
+                eventRepository.countDefectsParetoByModel(
+                        factoryId, fy, quarter, modelName
+                );
 
-     // Já vem ordenado do maior para o menor
-     List<DefectCountDTO> result = new ArrayList<>();
+        List<DefectCountDTO> result = new ArrayList<>();
 
-     for (Object[] r : raw) {
-         String defectName = (String) r[0];
-         Long count = ((Number) r[1]).longValue();
+        for (Object[] r : raw) {
+            result.add(new DefectCountDTO(
+                    (String) r[0],
+                    ((Number) r[1]).longValue()
+            ));
+        }
 
-         result.add(new DefectCountDTO(defectName, count));
-     }
-
-     return result;
- }
- 
- /* =====================================================
- 👟 Defeitos por Modelo (AJAX) — CORRIGIDO
- ===================================================== */
-@GetMapping("/data/models")
-@ResponseBody
-public List<DefectCountDTO> defectsByModel(
-        @RequestParam Long factoryId,
-        @RequestParam String fy,
-        @RequestParam String quarter) {
-
-    List<Object[]> raw =
-            eventRepository.countDefectsByModelRaw(factoryId, fy, quarter);
-
-    List<DefectCountDTO> result = new ArrayList<>();
-
-    for (Object[] r : raw) {
-        String modelName = (String) r[0]; // model_name
-        Long count = ((Number) r[1]).longValue();
-
-        result.add(new DefectCountDTO(modelName, count));
+        return result;
     }
 
-    return result;
-}
+    /* =====================================================
+       👟 Defeitos por MODELO (AJAX)
+       ===================================================== */
+    @GetMapping("/data/models")
+    @ResponseBody
+    public List<DefectCountDTO> defectsByModel(
+            @RequestParam Long factoryId,
+            @RequestParam String fy,
+            @RequestParam String quarter) {
 
+        List<Object[]> raw =
+                eventRepository.countDefectsByModelRaw(factoryId, fy, quarter);
+
+        List<DefectCountDTO> result = new ArrayList<>();
+
+        for (Object[] r : raw) {
+            result.add(new DefectCountDTO(
+                    (String) r[0],
+                    ((Number) r[1]).longValue()
+            ));
+        }
+
+        return result;
+    }
 }

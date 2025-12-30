@@ -5,67 +5,72 @@
 <body>
 <div class="hfpi-page">
 
-<h2 th:text="'HFPI Events - ' + ${factory.name}"></h2>
+    <label>Factory</label>
+    <select onchange="refreshWithFactory(this.value)">
+        <option th:each="f : ${factories}"
+                th:value="${f.id}"
+                th:text="${f.name}"
+                th:selected="${f.id == factory.id}">
+        </option>
+    </select>
 
-<div class="section">
+    <div class="section">
 
-    <a th:href="@{/hfpi/new/{id}(id=${factory.id})}"
-       class="btn-primary">
-        ➕ New HFPI Online
-    </a>
+        <a th:href="@{/hfpi/new/{id}(id=${factory.id})}" class="btn-primary">
+            ➕ New HFPI Online
+        </a>
 
-    <a th:href="@{/hfpi/defects/{id}(id=${factory.id})}"
-       class="btn-secondary">
-        📊 Defects Dashboard
-    </a>
-	
-	<a th:href="@{/hfpi-factory/{id}(id=${factory.id})}"  class="btn-primary">
-	    ➕ New HFPI Factory Interno
-	</a>
-	
-	<a class="btn btn-success"
-	   th:href="@{/hfpi/dashboard/final/{id}(id=${factory.id})}">
-	    📊 HFPI Dashboard Final
-	</a>
+        <a th:href="@{/hfpi/defects/{id}(id=${factory.id})}" class="btn-secondary">
+            📊 Defects Dashboard
+        </a>
 
+        <a th:href="@{/hfpi-factory/{id}(id=${factory.id})}" class="btn-primary">
+            ➕ New HFPI Factory Interno
+        </a>
 
+        <a th:href="@{/hfpi/dashboard/final/{id}(id=${factory.id})}" class="btn btn-success">
+            📊 HFPI Dashboard Final
+        </a>
 
-</div>
+    </div>
 
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Date</th>
-        <th>FY</th>
-        <th>Quarter</th>
-        <th>Severity</th>
-        <th>Status</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>FY</th>
+            <th>Quarter</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
 
-    <tbody>
-    <tr th:each="event : ${events}">
-        <td th:text="${event.id}"></td>
-        <td th:text="${event.eventDate}"></td>
-        <td th:text="${event.fy}"></td>
-        <td th:text="${event.quarter}"></td>
-        <td th:text="${event.severity}"></td>
-        <td th:text="${event.status}"></td>
-        <td>
-            <a th:href="@{/hfpi/edit/{id}(id=${event.id})}" class="btn-edit">✏️ Edit</a>
-            |
-            <a th:href="@{/hfpi/delete/{id}(id=${event.id})}"
-               class="btn-delete"
-               onclick="return confirm('Delete this event?')">
-               🗑 Delete
-            </a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        <tbody>
+        <tr th:each="event : ${events}">
+            <td th:text="${event.id}"></td>
+            <td th:text="${event.eventDate}"></td>
+            <td th:text="${event.fy}"></td>
+            <td th:text="${event.quarter}"></td>
+            <td th:text="${event.severity}"></td>
+            <td th:text="${event.status}"></td>
+            <td>
+                <a th:href="@{/hfpi/edit/{id}(id=${event.id})}">✏️ Edit</a> |
+                <a th:href="@{/hfpi/delete/{id}(id=${event.id})}"
+                   onclick="return confirm('Delete this event?')">🗑 Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
 </div>
+
+<script>
+function refreshWithFactory(factoryId) {
+    window.location.replace('/hfpi/' + factoryId);
+}
+</script>
+
 </body>
 </html>

@@ -25,7 +25,9 @@ public class HfpiFactoryController {
         this.factoryRepo = factoryRepo;
     }
 
-    // LISTA
+    /* =========================
+       LISTA (POR FÁBRICA + FY/QUARTER)
+       ========================= */
     @GetMapping("/{factoryId}")
     public String list(@PathVariable Long factoryId,
                        @RequestParam(required = false) String fy,
@@ -35,25 +37,29 @@ public class HfpiFactoryController {
         Factory factory = factoryRepo.findById(factoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Factory not found: " + factoryId));
 
-        List<HfpiFactory> rows = hfpiFactoryRepo.findByFactoryAndFyQuarter(factoryId, fy, quarter);
-
-        List<String> fyOptions = hfpiFactoryRepo.listFy(factoryId);
-        List<String> quarterOptions = hfpiFactoryRepo.listQuarter(factoryId, fy);
+        List<HfpiFactory> rows =
+                hfpiFactoryRepo.findByFactoryAndFyQuarter(factoryId, fy, quarter);
 
         model.addAttribute("factory", factory);
+        model.addAttribute("factoryId", factoryId);
+        model.addAttribute("factories", factoryRepo.findAll());
+
         model.addAttribute("rows", rows);
 
         model.addAttribute("fy", fy);
         model.addAttribute("quarter", quarter);
-        model.addAttribute("fyOptions", fyOptions);
-        model.addAttribute("quarterOptions", quarterOptions);
+        model.addAttribute("fyOptions", hfpiFactoryRepo.listFy(factoryId));
+        model.addAttribute("quarterOptions", hfpiFactoryRepo.listQuarter(factoryId, fy));
 
         return "hfpi-factory/list";
     }
 
-    // NOVO
+    /* =========================
+       NOVO
+       ========================= */
     @GetMapping("/new/{factoryId}")
     public String createForm(@PathVariable Long factoryId, Model model) {
+
         Factory factory = factoryRepo.findById(factoryId)
                 .orElseThrow(() -> new IllegalArgumentException("Factory not found: " + factoryId));
 
@@ -61,44 +67,47 @@ public class HfpiFactoryController {
         form.setFactory(factory);
 
         model.addAttribute("factory", factory);
+        model.addAttribute("factories", factoryRepo.findAll());
         model.addAttribute("hfpiFactory", form);
 
         return "hfpi-factory/form";
     }
 
-    // EDITAR
+    /* =========================
+       EDITAR
+       ========================= */
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
+
         HfpiFactory row = hfpiFactoryRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("HFPI Factory not found: " + id));
 
         model.addAttribute("factory", row.getFactory());
+        model.addAttribute("factories", factoryRepo.findAll());
         model.addAttribute("hfpiFactory", row);
 
         return "hfpi-factory/form";
     }
 
-    // SALVAR (cria ou atualiza)
+    /* =========================
+       SALVAR
+       ========================= */
     @PostMapping("/save")
     @Transactional
     public String save(@ModelAttribute("hfpiFactory") HfpiFactory hfpiFactory,
                        RedirectAttributes ra) {
 
-        // Validações simples
         if (hfpiFactory.getFactory() == null || hfpiFactory.getFactory().getId() == null) {
             throw new IllegalArgumentException("Factory is required");
         }
-        if (isBlank(hfpiFactory.getFy()) || isBlank(hfpiFactory.getQuarter()) || isBlank(hfpiFactory.getMonth())) {
-            ra.addFlashAttribute("error", "FY, Quarter and Month are required.");
-            return "redirect:/hfpi-factory/" + hfpiFactory.getFactory().getId();
-        }
+
+        Factory factory = factoryRepo.findById(hfpiFactory.getFactory().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Factory not found"));
+
+        hfpiFactory.setFactory(factory);
+
         if (hfpiFactory.getHfpiAprovados() == null) hfpiFactory.setHfpiAprovados(0);
         if (hfpiFactory.getHfpiRealizado() == null) hfpiFactory.setHfpiRealizado(0);
-
-        // Reanexa factory do banco (evita transient)
-        Factory factory = factoryRepo.findById(hfpiFactory.getFactory().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Factory not found: " + hfpiFactory.getFactory().getId()));
-        hfpiFactory.setFactory(factory);
 
         hfpiFactoryRepo.save(hfpiFactory);
 
@@ -106,45 +115,20 @@ public class HfpiFactoryController {
         return "redirect:/hfpi-factory/" + factory.getId();
     }
 
-    // DELETAR
+    /* =========================
+       DELETAR
+       ========================= */
     @PostMapping("/delete/{id}")
     @Transactional
     public String delete(@PathVariable Long id, RedirectAttributes ra) {
-        HfpiFactory row = hfpiFactoryRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("HFPI Factory not found: " + id));
-        Long factoryId = row.getFactory().getId();
 
+        HfpiFactory row = hfpiFactoryRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("HFPI Factory not found"));
+
+        Long factoryId = row.getFactory().getId();
         hfpiFactoryRepo.delete(row);
 
         ra.addFlashAttribute("success", "Deleted successfully.");
         return "redirect:/hfpi-factory/" + factoryId;
     }
-
-    private boolean isBlank(String s) {
-        return s == null || s.trim().isEmpty();
-    }
-    
- // ============================
- // ENDPOINTS JSON (Dashboard)
- // ============================
-
- @GetMapping("/api/fy/{factoryId}")
- @ResponseBody
- public List<String> apiListFy(@PathVariable Long factoryId) {
-     return hfpiFactoryRepo.listFy(factoryId);
- }
-
- @GetMapping("/api/quarter/{factoryId}")
- @ResponseBody
- public List<String> apiListQuarter(
-         @PathVariable Long factoryId,
-         @RequestParam(required = false) String fy) {
-
-     return hfpiFactoryRepo.listQuarter(factoryId, fy);
- }
- 
- 
- 
- 
-
 }
