@@ -78,49 +78,52 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     List<Object[]> countDefectsBySeverity(@Param("factoryId") Long factoryId);
 
     /* =====================================================
-       📈 Defeitos por FY + Quarter
-       ✅ FY MANTIDO
-       ✅ Quarter ISOLADO
-       ✅ MODERADO + SEVERO
-       ===================================================== */
-    @Query(value = """
-        SELECT d.name AS defectName, COUNT(*) AS count
-        FROM hfpi_events e
-        JOIN hfpi_items i ON i.event_id = e.id
-        JOIN defect_types_new d ON d.id = i.defect_1_id
-        WHERE e.factory_id = :factoryId
-          AND e.fy = :fy
-          AND e.quarter = :quarter
-          AND i.rating IN ('MODERADO','SEVERO')
-        GROUP BY d.name
+    📊 PARETO 80/20 – Defeitos por TIPO (FY + QUARTER)
+    🔥 VALIDADO NO BANCO
+    ===================================================== */
+ @Query(value = """
+     SELECT defect_name, SUM(cnt) AS total
+     FROM (
+         SELECT d.name AS defect_name, COUNT(*) AS cnt
+         FROM hfpi_items i
+         JOIN hfpi_events e ON e.id = i.event_id
+         JOIN defect_types_new d ON d.id = i.defect_1_id
+         WHERE e.factory_id = :factoryId
+           AND e.fy = :fy
+           AND e.quarter = :quarter
+         GROUP BY d.name
 
-        UNION ALL
-        SELECT d.name, COUNT(*)
-        FROM hfpi_events e
-        JOIN hfpi_items i ON i.event_id = e.id
-        JOIN defect_types_new d ON d.id = i.defect_2_id
-        WHERE e.factory_id = :factoryId
-          AND e.fy = :fy
-          AND e.quarter = :quarter
-          AND i.rating IN ('MODERADO','SEVERO')
-        GROUP BY d.name
+         UNION ALL
 
-        UNION ALL
-        SELECT d.name, COUNT(*)
-        FROM hfpi_events e
-        JOIN hfpi_items i ON i.event_id = e.id
-        JOIN defect_types_new d ON d.id = i.defect_3_id
-        WHERE e.factory_id = :factoryId
-          AND e.fy = :fy
-          AND e.quarter = :quarter
-          AND i.rating IN ('MODERADO','SEVERO')
-        GROUP BY d.name
-    """, nativeQuery = true)
-    List<Object[]> countDefectsByFYAndQuarterRaw(
-            @Param("factoryId") Long factoryId,
-            @Param("fy") String fy,
-            @Param("quarter") String quarter
-    );
+         SELECT d.name, COUNT(*)
+         FROM hfpi_items i
+         JOIN hfpi_events e ON e.id = i.event_id
+         JOIN defect_types_new d ON d.id = i.defect_2_id
+         WHERE e.factory_id = :factoryId
+           AND e.fy = :fy
+           AND e.quarter = :quarter
+         GROUP BY d.name
+
+         UNION ALL
+
+         SELECT d.name, COUNT(*)
+         FROM hfpi_items i
+         JOIN hfpi_events e ON e.id = i.event_id
+         JOIN defect_types_new d ON d.id = i.defect_3_id
+         WHERE e.factory_id = :factoryId
+           AND e.fy = :fy
+           AND e.quarter = :quarter
+         GROUP BY d.name
+     ) t
+     GROUP BY defect_name
+     ORDER BY total DESC
+ """, nativeQuery = true)
+ List<Object[]> countDefectsParetoByType(
+         @Param("factoryId") Long factoryId,
+         @Param("fy") String fy,
+         @Param("quarter") String quarter
+ );
+
 
     /* =====================================================
        🔽 FY / Quarter (MANTIDO)
@@ -227,7 +230,7 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     	        @Param("fy") String fy,
     	        @Param("quarter") String quarter
     	);
-    
+
     @Query(value = """
     	    SELECT
     	        COUNT(i.id) AS total_itens,
@@ -243,6 +246,4 @@ public interface HfpiEventRepository extends JpaRepository<HfpiEvent, Long> {
     	        @Param("fy") String fy,
     	        @Param("quarter") String quarter
     	);
-
-
 }
