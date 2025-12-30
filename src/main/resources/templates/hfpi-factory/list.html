@@ -11,7 +11,14 @@
     <div class="content">
         <h1>🏭 HFPI Factory</h1>
 
-        <p>Factory: <strong th:text="${factory.name}"></strong></p>
+		<label>Factory</label>
+		<select onchange="changeFactory(this.value)">
+		    <option th:each="f : ${factories}"
+		            th:value="${f.id}"
+		            th:text="${f.name}"
+		            th:selected="${f.id == factoryId}">
+		    </option>
+		</select>
 
         <div th:if="${success}" class="alert success" th:text="${success}"></div>
         <div th:if="${error}" class="alert error" th:text="${error}"></div>
@@ -91,6 +98,13 @@
 
     </div>
 </div>
+
+<script>
+function changeFactory(factoryId) {
+    window.location.replace('/hfpi-factory/' + factoryId);
+}
+</script>
+
 
 </body>
 </html>

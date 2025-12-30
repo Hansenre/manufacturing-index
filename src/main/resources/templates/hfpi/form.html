@@ -16,7 +16,14 @@
           th:object="${hfpiEvent}"
           method="post">
 
-        <input type="hidden" name="factoryId" th:value="${factory.id}" />
+		  <label>Factory</label>
+		  <select name="factoryId" required>
+		      <option th:each="f : ${factories}"
+		              th:value="${f.id}"
+		              th:text="${f.name}"
+		              th:selected="${f.id == factory.id}">
+		      </option>
+		  </select>
 
         <!-- =========================
              TOPO DO FORM

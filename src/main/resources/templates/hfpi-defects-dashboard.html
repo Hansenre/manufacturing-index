@@ -20,6 +20,15 @@
 </nav>
 
 <!-- ================= FILTROS ================= -->
+<label>Factory:</label>
+<select onchange="changeFactory(this.value)">
+    <option th:each="f : ${factories}"
+            th:value="${f.id}"
+            th:text="${f.name}"
+            th:selected="${f.id == factoryId}">
+    </option>
+</select>
+
 <div class="filters-card">
     <label>FY:</label>
     <select id="fySelect"></select>
@@ -36,34 +45,28 @@
 
 <!-- ================= POR TIPO ================= -->
 <section id="typeSection" style="margin-top:20px;">
-
     <h3>Pareto – Defeitos por Tipo (80/20)</h3>
-
     <div class="chart-box">
         <canvas id="defectPareto"></canvas>
     </div>
-
 </section>
 
 <!-- ================= POR MODELO ================= -->
 <section id="modelSection" style="display:none; margin-top:20px;">
-
     <label>Models:</label>
     <select id="modelSelect" size="6" style="min-width:220px;"></select>
     <small>Selecione 1 modelo</small>
 
     <h3 style="margin-top:20px;">Pareto – Defeitos por Modelo (80/20)</h3>
-
     <div style="height:420px;">
         <canvas id="modelChart"></canvas>
     </div>
-
 </section>
 
 <script th:inline="javascript">
 Chart.register(ChartDataLabels);
 
-const factoryId = [[${factory.id}]];
+const factoryId = [[${factoryId}]];
 
 /* ================= ELEMENTOS ================= */
 const fySelect = document.getElementById("fySelect");
@@ -80,7 +83,6 @@ const modelSelect = document.getElementById("modelSelect");
 const modelCanvas = document.getElementById("modelChart");
 const defectPareto = document.getElementById("defectPareto");
 
-/* ================= CHARTS ================= */
 let paretoChart = null;
 let modelChart = null;
 
@@ -118,11 +120,10 @@ function loadTypePareto() {
             if (!data.length) return;
 
             data.sort((a, b) => b.count - a.count);
-
-            const labels = data.map(d => d.defectName);
-            const values = data.map(d => d.count);
-
-            renderTypePareto(labels, values);
+            renderTypePareto(
+                data.map(d => d.defectName),
+                data.map(d => d.count)
+            );
         });
 }
 
@@ -137,55 +138,21 @@ function renderTypePareto(labels, values) {
         data: {
             labels,
             datasets: [
-                {
-                    type: "bar",
-                    label: "Quantidade",
-                    data: values,
-                    backgroundColor: "#60a5fa",
-                    datalabels: {
-                        anchor: "end",
-                        align: "right",
-                        formatter: v => v
-                    }
-                },
-                {
-                    type: "line",
-                    label: "% Acumulado",
-                    data: perc,
-                    yAxisID: "y1",
-                    borderColor: "#f43f5e",
-                    tension: 0.3,
-                    datalabels: {
-                        anchor: "end",
-                        align: "top",
-                        formatter: v => `${v}%`
-                    }
-                }
+                { type: "bar", label: "Quantidade", data: values },
+                { type: "line", label: "% Acumulado", data: perc, yAxisID: "y1" }
             ]
         },
-        options: {
-            indexAxis: "y",
-            scales: {
-                y1: {
-                    beginAtZero: true,
-                    max: 100,
-                    position: "right",
-                    grid: { drawOnChartArea: false }
-                }
-            }
-        }
+        options: { indexAxis: "y", scales: { y1: { max: 100, position: "right" } } }
     });
 }
 
-/* ================= POR MODELO ================= */
+/* ================= MODELO ================= */
 function loadModels() {
     fetch(`/hfpi/defects/data/models?factoryId=${factoryId}&fy=${fySelect.value}&quarter=${quarterSelect.value}`)
         .then(r => r.json())
         .then(data => {
             modelSelect.innerHTML = "";
-            data.forEach(d =>
-                modelSelect.add(new Option(d.defectName, d.defectName))
-            );
+            data.forEach(d => modelSelect.add(new Option(d.defectName, d.defectName)));
         });
 }
 
@@ -199,67 +166,16 @@ function renderModelPareto(data) {
     if (!data.length) return;
 
     data.sort((a, b) => b.count - a.count);
-
-    const labels = [];
-    const values = [];
-    const cumulative = [];
-
-    const total = data.reduce((s, d) => s + d.count, 0);
-    let acc = 0;
-
-    data.forEach(d => {
-        labels.push(d.defectName);
-        values.push(d.count);
-        acc += d.count;
-        cumulative.push(((acc / total) * 100).toFixed(1));
-    });
-
-    const colors = cumulative.map(p => p <= 80 ? "#ef4444" : "#22c55e");
+    const labels = data.map(d => d.defectName);
+    const values = data.map(d => d.count);
 
     if (modelChart) modelChart.destroy();
-
     modelChart = new Chart(modelCanvas, {
         data: {
             labels,
-            datasets: [
-                {
-                    type: "bar",
-                    label: "Quantidade",
-                    data: values,
-                    backgroundColor: colors,
-                    datalabels: {
-                        anchor: "end",
-                        align: "right",
-                        formatter: v => v
-                    }
-                },
-                {
-                    type: "line",
-                    label: "% Acumulado",
-                    data: cumulative,
-                    yAxisID: "y1",
-                    borderColor: "#2563eb",
-                    tension: 0.3,
-                    datalabels: {
-                        anchor: "end",
-                        align: "top",
-                        formatter: v => `${v}%`
-                    }
-                }
-            ]
+            datasets: [{ type: "bar", label: "Quantidade", data: values }]
         },
-        options: {
-            indexAxis: "y",
-            maintainAspectRatio: false,
-            scales: {
-                y1: {
-                    beginAtZero: true,
-                    max: 100,
-                    position: "right",
-                    grid: { drawOnChartArea: false }
-                }
-            }
-        }
+        options: { indexAxis: "y" }
     });
 }
 
@@ -290,6 +206,12 @@ quarterSelect.onchange = () => {
 };
 
 loadFYs();
+</script>
+
+<script>
+function changeFactory(factoryId) {
+    window.location.replace(`/hfpi/defects/${factoryId}`);
+}
 </script>
 
 </body>
