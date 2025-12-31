@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>One Pager</title>
+
+    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content one-pager">
+
+        <!-- HEADER -->
+        <div class="one-pager-header">
+            <h2>
+                PRODUCT SUPPLY CHAIN - FOOTWEAR <br>
+                <strong th:text="${factory != null ? factory.name : 'Factory'}">Factory</strong>
+            </h2>
+
+            <a th:href="@{/one-pager}" class="btn-secondary">
+                🔄 Change Factory
+            </a>
+        </div>
+
+        <!-- OPERATION KPI -->
+        <section class="op-section">
+            <h3>OPERATION KPI</h3>
+
+            <table class="kpi-table">
+                <tr>
+                    <th>Pairs Produced</th>
+                    <th>Working Days</th>
+                    <th>Workforce Nike</th>
+                    <th>PPH</th>
+                    <th>DR &lt; 0.15%</th>
+                </tr>
+                <tr>
+                    <td th:text="${operationKpi != null ? operationKpi.pairsProduced : 0}">0</td>
+                    <td th:text="${operationKpi != null ? operationKpi.workingDays : 0}">0</td>
+                    <td th:text="${operationKpi != null ? operationKpi.workforceNike : 0}">0</td>
+                    <td th:text="${operationKpi != null ? operationKpi.pph : 0.0}">0</td>
+                    <td th:text="${operationKpi != null ? operationKpi.dr + '%' : '0%'}">0%</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- HFPI -->
+        <section class="op-section">
+            <h3>HFPI GROUP &gt; 95%</h3>
+
+            <div class="hfpi-box">
+                <div>
+                    <span>HFPI Geral</span>
+                    <strong th:text="${hfpi != null ? hfpi.hfpiGeral + '%' : '0%'}">0%</strong>
+                </div>
+
+                <div>
+                    <span>HFPI Fábrica</span>
+                    <strong th:text="${hfpi != null ? hfpi.hfpiFabrica + '%' : '0%'}">0%</strong>
+                </div>
+
+                <div>
+                    <span>HFPI Online</span>
+                    <strong th:text="${hfpi != null ? hfpi.hfpiOnline + '%' : '0%'}">0%</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- VOC -->
+        <section class="op-section">
+            <h3>VOC - Last Six Months</h3>
+            <canvas id="vocChart"></canvas>
+        </section>
+
+        <!-- WASTE -->
+        <section class="op-section">
+            <h3>WASTE - Last Six Months</h3>
+            <canvas id="wasteChart"></canvas>
+        </section>
+
+        <!-- DR TOP TYPES -->
+        <section class="op-section">
+            <h3>DR - Top Types</h3>
+            <canvas id="drChart"></canvas>
+        </section>
+
+        <!-- EXECUTIVE SUMMARY -->
+        <section class="op-section">
+            <h3>EXECUTIVE SUMMARY</h3>
+
+            <div class="summary-box">
+                <div>
+                    <h4>Highlight</h4>
+                    <p th:text="${summary != null && summary.highlight != null ? summary.highlight : 'N/A'}">
+                        N/A
+                    </p>
+                </div>
+
+                <div>
+                    <h4>Key Action</h4>
+                    <p th:text="${summary != null && summary.keyAction != null ? summary.keyAction : 'N/A'}">
+                        N/A
+                    </p>
+                </div>
+
+                <div>
+                    <h4>Help Needed</h4>
+                    <p th:text="${summary != null && summary.helpNeeded != null ? summary.helpNeeded : 'N/A'}">
+                        N/A
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <a th:href="@{/}" class="btn-secondary">
+            ⬅ Back to Dashboard
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,62 +1,72 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head('HFPI Factory')"></head>
-<link rel="stylesheet" th:href="@{/css/layout.css}">
-<link rel="stylesheet" th:href="@{/css/hfpi-factory.css}">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Operation KPI</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
 <body>
 
 <div class="container">
     <div th:replace="fragments/sidebar :: sidebar"></div>
 
     <div class="content">
-        <h1>🏭 HFPI Factory</h1>
 
-        <p>Factory: <strong th:text="${factory.name}"></strong></p>
+        <h2>📊 Operation KPI</h2>
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
 
-        <div class="actions">
-            <a class="btn-secondary" th:href="@{/hfpi-factory/{id}(id=${factory.id})}">⬅ Voltar</a>
-            <a class="btn-secondary" th:href="@{/}">🏠 Dashboard</a>
-        </div>
+        <form th:action="@{/kpi/operation/save/{id}(id=${factory.id})}"
+              th:object="${kpi}"
+              method="post"
+              class="form-box">
 
-        <div class="card">
-            <form th:action="@{/hfpi-factory/save}" th:object="${hfpiFactory}" method="post">
+            <!-- PERIOD -->
+            <label>Fiscal Year (FY)</label>
+            <input type="text" th:field="*{fy}" placeholder="FY26" required>
 
-                <input type="hidden" th:field="*{id}">
-                <input type="hidden" th:field="*{factory.id}">
+            <label>Quarter</label>
+            <select th:field="*{quarter}" required>
+                <option value="">-- Select --</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+            </select>
 
-                <div class="grid">
-                    <div class="field">
-                        <label>FY (ex.: FY26)</label>
-                        <input type="text" th:field="*{fy}" placeholder="FY26" required>
-                    </div>
+            <label>Month</label>
+            <input type="text" th:field="*{month}" placeholder="Aug" required>
 
-                    <div class="field">
-                        <label>Quarter (ex.: Q1)</label>
-                        <input type="text" th:field="*{quarter}" placeholder="Q1" required>
-                    </div>
+            <hr>
 
-                    <div class="field">
-                        <label>Month (ex.: Jun)</label>
-                        <input type="text" th:field="*{month}" placeholder="Jun" required>
-                    </div>
+            <!-- KPI VALUES -->
+            <label>Pairs Produced</label>
+            <input type="number" th:field="*{pairsProduced}" required>
 
-                    <div class="field">
-                        <label>HFPI Aprovados</label>
-                        <input type="number" min="0" th:field="*{hfpiAprovados}" required>
-                    </div>
+            <label>Working Days</label>
+            <input type="number" th:field="*{workingDays}" required>
 
-                    <div class="field">
-                        <label>HFPI Realizado</label>
-                        <input type="number" min="0" th:field="*{hfpiRealizado}" required>
-                    </div>
-                </div>
+            <label>Workforce Nike</label>
+            <input type="number" th:field="*{workforceNike}" required>
 
-                <div class="actions">
-                    <button class="btn-primary" type="submit">💾 Salvar</button>
-                </div>
+            <label>PPH</label>
+            <input type="number" step="0.01" th:field="*{pph}" required>
 
-            </form>
-        </div>
+            <label>DR (&lt; 0.15%)</label>
+            <input type="number" step="0.001" th:field="*{dr}" required>
+
+            <button type="submit" class="btn-primary">
+                💾 Save KPI
+            </button>
+
+            <a th:href="@{/one-pager/manage?factoryId={id}(id=${factory.id})}"
+               class="btn-secondary">
+                Cancel
+            </a>
+
+        </form>
 
     </div>
 </div>
