@@ -113,6 +113,51 @@
             </div>
 
         </form>
+		
+		<!-- =========================
+		     EXISTING KPIs (HISTORY)
+		========================== -->
+
+		<div class="form-card" style="margin-top: 30px;">
+
+		    <h3>📊 KPIs already registered for this Factory</h3>
+
+		    <table class="table">
+		        <thead>
+		        <tr>
+		            <th>FY</th>
+		            <th>Quarter</th>
+		            <th>Month</th>
+		            <th>Pairs</th>
+		            <th>Working Days</th>
+		            <th>Workforce</th>
+		            <th>PPH</th>
+		            <th>DR</th>
+		        </tr>
+		        </thead>
+
+		        <tbody>
+		        <tr th:each="kpi : ${existingKpis}">
+		            <td th:text="${kpi.fy}"></td>
+		            <td th:text="${kpi.quarter}"></td>
+		            <td th:text="${kpi.monthRef}"></td>
+		            <td th:text="${kpi.pairsProduced}"></td>
+		            <td th:text="${kpi.workingDays}"></td>
+		            <td th:text="${kpi.workforceNike}"></td>
+		            <td th:text="${kpi.pph}"></td>
+		            <td th:text="${kpi.dr}"></td>
+		        </tr>
+
+		        <tr th:if="${#lists.isEmpty(existingKpis)}">
+		            <td colspan="8" style="text-align:center; opacity:0.6;">
+		                No KPI records found for this factory
+		            </td>
+		        </tr>
+		        </tbody>
+		    </table>
+
+		</div>
+
 
     </div>
 </div>

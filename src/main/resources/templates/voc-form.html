@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head('VOC')"></head>
+
+<body>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+
+        <h2>🧪 Volatile Organic Compounds (VOC)</h2>
+        <p class="subtitle">Unit: grams per pair (gr/pairs)</p>
+
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
+
+        <form th:action="@{/voc/save/{factoryId}(factoryId=${factory.id})}"
+              th:object="${voc}"
+              method="post"
+              class="form-card">
+
+            <h3>📅 Period</h3>
+
+            <label>Fiscal Year (FY)</label>
+            <input type="text" th:field="*{fy}" placeholder="FY26" required />
+
+            <label>Quarter</label>
+            <select th:field="*{quarter}" required>
+                <option value="">Select Quarter</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+            </select>
+
+            <label>Month</label>
+            <select th:field="*{monthRef}" required>
+                <option value="">Select Month</option>
+                <option value="JAN">JAN</option>
+                <option value="FEB">FEB</option>
+                <option value="MAR">MAR</option>
+                <option value="APR">APR</option>
+                <option value="MAY">MAY</option>
+                <option value="JUN">JUN</option>
+                <option value="JUL">JUL</option>
+                <option value="AUG">AUG</option>
+                <option value="SEP">SEP</option>
+                <option value="OCT">OCT</option>
+                <option value="NOV">NOV</option>
+                <option value="DEC">DEC</option>
+            </select>
+
+            <hr>
+
+            <label>VOC Emission (gr/pairs)</label>
+
+            <div class="voc-score-wrapper">
+                <input type="range"
+                       min="0"
+                       max="30"
+                       step="0.1"
+                       th:field="*{voc}"
+                       oninput="this.nextElementSibling.value = this.value" />
+                <output>0.0</output>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    💾 Save VOC
+                </button>
+
+                <a th:href="@{/one-pager/{id}(id=${factory.id})}"
+                   class="btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+        <div class="voc-summary-card"
+             th:if="${!#lists.isEmpty(vocList)}">
+            <div class="voc-summary-label">Latest VOC (gr/pairs)</div>
+            <div class="voc-summary-value"
+                 th:text="${vocList[0].voc}">
+            </div>
+        </div>
+
+        <div class="form-card" style="margin-top:30px;">
+            <h3>🌱 VOC Emissions History</h3>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>FY</th>
+                    <th>Quarter</th>
+                    <th>Month</th>
+                    <th>VOC (gr/pairs)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="v : ${vocList}">
+                    <td th:text="${v.fy}"></td>
+                    <td th:text="${v.quarter}"></td>
+                    <td th:text="${v.monthRef}"></td>
+                    <td th:text="${v.voc}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

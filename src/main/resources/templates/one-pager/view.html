@@ -2,24 +2,26 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>One Pager</title>
-
-    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
 </head>
 
 <body>
 
 <div class="container">
-
     <div th:replace="fragments/sidebar :: sidebar"></div>
 
     <div class="content one-pager">
 
-        <!-- HEADER -->
+        <!-- ================= HEADER ================= -->
         <div class="one-pager-header">
             <h2>
-                PRODUCT SUPPLY CHAIN - FOOTWEAR <br>
-                <strong th:text="${factory != null ? factory.name : 'Factory'}">Factory</strong>
+                PRODUCT SUPPLY CHAIN – FOOTWEAR<br>
+                <small>
+                    <strong th:text="${factory != null ? factory.name : 'Factory'}">
+                        Factory
+                    </strong>
+                </small>
             </h2>
 
             <a th:href="@{/one-pager}" class="btn-secondary">
@@ -27,95 +29,139 @@
             </a>
         </div>
 
-        <!-- OPERATION KPI -->
-        <section class="op-section">
-            <h3>OPERATION KPI</h3>
+        <!-- ================= GRID ================= -->
+        <div class="one-pager-grid">
 
-            <table class="kpi-table">
-                <tr>
-                    <th>Pairs Produced</th>
-                    <th>Working Days</th>
-                    <th>Workforce Nike</th>
-                    <th>PPH</th>
-                    <th>DR &lt; 0.15%</th>
-                </tr>
-                <tr>
-                    <td th:text="${operationKpi != null ? operationKpi.pairsProduced : 0}">0</td>
-                    <td th:text="${operationKpi != null ? operationKpi.workingDays : 0}">0</td>
-                    <td th:text="${operationKpi != null ? operationKpi.workforceNike : 0}">0</td>
-                    <td th:text="${operationKpi != null ? operationKpi.pph : 0.0}">0</td>
-                    <td th:text="${operationKpi != null ? operationKpi.dr + '%' : '0%'}">0%</td>
-                </tr>
-            </table>
-        </section>
+            <!-- OPERATION KPI + QUALITY METRICS -->
+            <div class="pdf-card col-12">
+                <div class="kpi-top-grid">
 
-        <!-- HFPI -->
-        <section class="op-section">
-            <h3>HFPI GROUP &gt; 95%</h3>
+                    <!-- OPERATION KPI -->
+                    <div class="kpi-left">
+                        <div class="pdf-title">Operation KPI</div>
 
-            <div class="hfpi-box">
-                <div>
-                    <span>HFPI Geral</span>
-                    <strong th:text="${hfpi != null ? hfpi.hfpiGeral + '%' : '0%'}">0%</strong>
-                </div>
+                        <table class="kpi-table">
+                            <tr>
+                                <th>Pairs Produced</th>
+                                <th>Working Days</th>
+                                <th>Workforce Nike</th>
+                                <th>PPH</th>
+                                <th>DR &lt; 0.15%</th>
+                            </tr>
+                            <tr>
+                                <td th:text="${operationKpi != null ? operationKpi.pairsProduced : 0}">0</td>
+                                <td th:text="${operationKpi != null ? operationKpi.workingDays : 0}">0</td>
+                                <td th:text="${operationKpi != null ? operationKpi.workforceNike : 0}">0</td>
+                                <td th:text="${operationKpi != null ? operationKpi.pph : 0}">0</td>
+                                <td th:text="${operationKpi != null ? operationKpi.dr + '%' : '0%'}">0%</td>
+                            </tr>
+                        </table>
+                    </div>
 
-                <div>
-                    <span>HFPI Fábrica</span>
-                    <strong th:text="${hfpi != null ? hfpi.hfpiFabrica + '%' : '0%'}">0%</strong>
-                </div>
+                    <!-- KPI QUALITY METRICS -->
+                    <div class="kpi-right">
+                        <div class="pdf-title">KPI Quality Metrics</div>
 
-                <div>
-                    <span>HFPI Online</span>
-                    <strong th:text="${hfpi != null ? hfpi.hfpiOnline + '%' : '0%'}">0%</strong>
-                </div>
-            </div>
-        </section>
+                        <div class="quality-grid">
+                            <div class="quality-card">
+                                <h4>MPPA</h4>
+                                <small>Big Nike Low</small>
+                                <img src="/uploads/mppa.png" alt="MPPA Metric">
+                            </div>
 
-        <!-- VOC -->
-        <section class="op-section">
-            <h3>VOC - Last Six Months</h3>
-            <canvas id="vocChart"></canvas>
-        </section>
+                            <div class="quality-card">
+                                <h4>MQAAs &gt; 97.5%</h4>
+                                <small>Assembly</small>
+                                <img src="/uploads/mqaa.png" alt="MQAA Metric">
+                            </div>
 
-        <!-- WASTE -->
-        <section class="op-section">
-            <h3>WASTE - Last Six Months</h3>
-            <canvas id="wasteChart"></canvas>
-        </section>
+                            <div class="quality-card">
+                                <h4>BTP 2.0 – 99%</h4>
+                                <small>Daily Bonding Test</small>
+                                <img src="/uploads/btp.png" alt="BTP Metric">
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- DR TOP TYPES -->
-        <section class="op-section">
-            <h3>DR - Top Types</h3>
-            <canvas id="drChart"></canvas>
-        </section>
-
-        <!-- EXECUTIVE SUMMARY -->
-        <section class="op-section">
-            <h3>EXECUTIVE SUMMARY</h3>
-
-            <div class="summary-box">
-                <div>
-                    <h4>Highlight</h4>
-                    <p th:text="${summary != null && summary.highlight != null ? summary.highlight : 'N/A'}">
-                        N/A
-                    </p>
-                </div>
-
-                <div>
-                    <h4>Key Action</h4>
-                    <p th:text="${summary != null && summary.keyAction != null ? summary.keyAction : 'N/A'}">
-                        N/A
-                    </p>
-                </div>
-
-                <div>
-                    <h4>Help Needed</h4>
-                    <p th:text="${summary != null && summary.helpNeeded != null ? summary.helpNeeded : 'N/A'}">
-                        N/A
-                    </p>
                 </div>
             </div>
-        </section>
+
+			
+
+
+			<!-- VOC / WASTE -->
+			<div class="pdf-card col-6">
+			    <div class="pdf-title">VOC – Last Six Months</div>
+			    <canvas id="vocChart"></canvas>
+			</div>
+
+			<div class="pdf-card col-6">
+			    <div class="pdf-title">Waste – Last Six Months</div>
+			    <canvas id="wasteChart"></canvas>
+			</div>
+
+			<!-- DR + HFPI (MESMA LINHA, SEM ESPAÇO VAZIO) -->
+			
+			<div class="pdf-card col-6">
+			    <div class="pdf-title">HFPI GROUP &gt; 95%</div>
+
+			    <div class="hfpi-box">
+			        <div class="kpi-metric">
+			            <span>HFPI Geral</span>
+			            <strong class="kpi-green"
+			                    th:text="${hfpi != null ? hfpi.hfpiGeral + '%' : '0%'}">
+			                0%
+			            </strong>
+			        </div>
+
+			        <div class="kpi-metric">
+			            <span>HFPI Fábrica</span>
+			            <strong class="kpi-green"
+			                    th:text="${hfpi != null ? hfpi.hfpiFabrica + '%' : '0%'}">
+			                0%
+			            </strong>
+			        </div>
+
+			        <div class="kpi-metric">
+			            <span>HFPI Online</span>
+			            <strong class="kpi-green"
+			                    th:text="${hfpi != null ? hfpi.hfpiOnline + '%' : '0%'}">
+			                0%
+			            </strong>
+			        </div>
+			    </div>
+			</div>
+			<div class="pdf-card col-6">
+						    <div class="pdf-title">DR – Top Types</div>
+						    <canvas id="drChart"></canvas>
+			</div>
+			
+			
+
+
+            <!-- EXECUTIVE SUMMARY -->
+            <div class="pdf-card col-12">
+                <div class="pdf-title">Executive Summary</div>
+
+                <div class="summary-box">
+                    <div>
+                        <h4>Highlight</h4>
+                        <p th:text="${summary != null ? summary.highlight : 'N/A'}">N/A</p>
+                    </div>
+
+                    <div>
+                        <h4>Key Action</h4>
+                        <p th:text="${summary != null ? summary.keyAction : 'N/A'}">N/A</p>
+                    </div>
+
+                    <div>
+                        <h4>Help Needed</h4>
+                        <p th:text="${summary != null ? summary.helpNeeded : 'N/A'}">N/A</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
         <a th:href="@{/}" class="btn-secondary">
             ⬅ Back to Dashboard

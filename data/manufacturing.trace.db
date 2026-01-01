@@ -5025,3 +5025,6 @@ alter table if exists kpi_record add column month varchar(255) not null [42001-2
 2025-12-31 17:08:44.582139-03:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_record add column [*]month varchar(255) not null"; expected "identifier"; SQL statement:
 alter table if exists kpi_record add column month varchar(255) not null [42001-224]
+2026-01-01 15:09:23.170748-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "ALTER TABLE voc_record [*]AUTO_INCREMENT = 1"; expected "., ADD, SET, RENAME, DROP, ALTER"; SQL statement:
+ALTER TABLE voc_record AUTO_INCREMENT = 1 [42001-224]

@@ -213,3 +213,274 @@
     color: white;
 }
 
+/* =========================
+   ONE PAGER GRID (PDF STYLE)
+========================= */
+
+.one-pager-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+}
+
+/* Colunas fixas */
+.col-12 { grid-column: span 12; }
+.col-8  { grid-column: span 8; }
+.col-6  { grid-column: span 6; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+
+/* Ajuste visual mais "PDF" */
+.pdf-card {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 14px;
+    box-shadow: none;
+    border: 1px solid #dcdcdc;
+}
+
+/* =========================
+   PDF SECTION TITLE
+========================= */
+
+.pdf-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 3px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+}
+
+/* =========================
+   KPI METRIC (PDF STYLE)
+========================= */
+
+.kpi-metric {
+    text-align: center;
+}
+
+.kpi-metric span {
+    font-size: 12px;
+    color: #555;
+}
+
+.kpi-metric strong {
+    display: block;
+    font-size: 26px;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+.kpi-green { color: #1a7f37; }
+.kpi-yellow { color: #f1c40f; }
+.kpi-red { color: #c0392b; }
+
+}
+
+.image-metric {
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    border: 2px solid #000;
+    text-align: center;
+}
+
+.image-metric img {
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+/* =========================
+   KPI QUALITY METRICS (PDF STYLE)
+========================= */
+
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.quality-card {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 22px;
+    padding: 14px;
+    text-align: center;
+}
+
+.quality-card h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.quality-card small {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #444;
+}
+
+.quality-card img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   KPI QUALITY METRICS (PDF STYLE)
+========================= */
+
+.kpi-right {
+    margin-top: 18px;
+}
+
+.kpi-right h3 {
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #000;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* GRID HORIZONTAL */
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: stretch;
+}
+
+/* CARD */
+.quality-card {
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 14px;
+    text-align: center;
+    background: #fff;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* TITLES */
+.quality-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.quality-card small {
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* IMAGE PLACEHOLDER */
+.quality-card img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    margin: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   OP KPI + QUALITY METRICS
+========================= */
+
+.kpi-top-grid {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.kpi-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-right {
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   QUALITY METRICS GRID
+========================= */
+
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.quality-card {
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    background: #fff;
+}
+
+.quality-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.quality-card small {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.quality-card img {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+    .kpi-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+
+
+
+
+

@@ -1,12 +1,14 @@
 package com.manufacturing.manufacturingindex.controller;
 
 import java.security.Principal;
+import java.util.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.manufacturing.manufacturingindex.dto.OperationKpiDTO;
+import com.manufacturing.manufacturingindex.dto.OperationKpiViewDTO;
 import com.manufacturing.manufacturingindex.model.Factory;
 import com.manufacturing.manufacturingindex.model.KpiRecord;
 import com.manufacturing.manufacturingindex.model.User;
@@ -31,7 +33,7 @@ public class KpiController {
     }
 
     /* ===============================
-       FORM
+       FORM + LIST
     =============================== */
     @GetMapping("/new/{factoryId}")
     public String newOperationKpi(@PathVariable Long factoryId,
@@ -42,8 +44,38 @@ public class KpiController {
 
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
 
+        // 🔹 BUSCA TODOS OS KPIs DA FÁBRICA
+        List<KpiRecord> records =
+                kpiRepo.findByFactoryId(factoryId);
+
+        // 🔹 CONSOLIDA (FY + Quarter + Month)
+        Map<String, OperationKpiViewDTO> map = new LinkedHashMap<>();
+
+        for (KpiRecord r : records) {
+
+            String key = r.getFy() + "-" + r.getQuarter() + "-" + r.getMonthRef();
+
+            OperationKpiViewDTO view =
+                    map.getOrDefault(key, new OperationKpiViewDTO());
+
+            view.setFy(r.getFy());
+            view.setQuarter(r.getQuarter());
+            view.setMonthRef(r.getMonthRef());
+
+            switch (r.getMetric()) {
+                case "PAIRS_PRODUCED" -> view.setPairsProduced(r.getKpiValue());
+                case "WORKING_DAYS" -> view.setWorkingDays(r.getKpiValue());
+                case "WORKFORCE_NIKE" -> view.setWorkforceNike(r.getKpiValue());
+                case "PPH" -> view.setPph(r.getKpiValue());
+                case "DR" -> view.setDr(r.getKpiValue());
+            }
+
+            map.put(key, view);
+        }
+
         model.addAttribute("factory", factory);
-        model.addAttribute("form", new OperationKpiDTO()); // 🔥 OBRIGATÓRIO
+        model.addAttribute("form", new OperationKpiDTO());
+        model.addAttribute("existingKpis", new ArrayList<>(map.values()));
 
         return "kpi/operation-form";
     }
@@ -66,7 +98,7 @@ public class KpiController {
         save(factory, form, "PPH", form.getPph());
         save(factory, form, "DR", form.getDr());
 
-        return "redirect:/one-pager/manage?factoryId=" + factoryId;
+        return "redirect:/kpi/operation/new/" + factoryId;
     }
 
     /* ===============================
