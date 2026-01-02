@@ -5,7 +5,6 @@ public class OperationKpiDTO {
     /* ======================
        PERIOD
     ====================== */
-
     private String fy;
     private String quarter;
     private String monthRef;
@@ -13,10 +12,9 @@ public class OperationKpiDTO {
     /* ======================
        KPI VALUES
     ====================== */
-
-    private Integer pairsProduced;
-    private Integer workingDays;
-    private Integer workforceNike;
+    private Double pairsProduced;
+    private Double workingDays;
+    private Double workforceNike;
     private Double pph;
     private Double dr;
 
@@ -48,27 +46,27 @@ public class OperationKpiDTO {
         this.monthRef = monthRef;
     }
 
-    public Integer getPairsProduced() {
+    public Double getPairsProduced() {
         return pairsProduced;
     }
 
-    public void setPairsProduced(Integer pairsProduced) {
+    public void setPairsProduced(Double pairsProduced) {
         this.pairsProduced = pairsProduced;
     }
 
-    public Integer getWorkingDays() {
+    public Double getWorkingDays() {
         return workingDays;
     }
 
-    public void setWorkingDays(Integer workingDays) {
+    public void setWorkingDays(Double workingDays) {
         this.workingDays = workingDays;
     }
 
-    public Integer getWorkforceNike() {
+    public Double getWorkforceNike() {
         return workforceNike;
     }
 
-    public void setWorkforceNike(Integer workforceNike) {
+    public void setWorkforceNike(Double workforceNike) {
         this.workforceNike = workforceNike;
     }
 

@@ -30,20 +30,16 @@ public class PerformanceController {
         this.kpiRepo = kpiRepo;
         this.userRepo = userRepo;
     }
-    
+
     @GetMapping("/performance")
     public String performanceSelect(Model model, Principal principal) {
 
-        if (principal == null) {
-            return "redirect:/login";
-        }
+        if (principal == null) return "redirect:/login";
 
         User user = userRepo.findByUsername(principal.getName()).orElseThrow();
         List<Factory> factories = factoryRepo.findByOwner(user);
 
-        if (factories.isEmpty()) {
-            return "redirect:/factories";
-        }
+        if (factories.isEmpty()) return "redirect:/factories";
 
         model.addAttribute("factories", factories);
         model.addAttribute("selectedFactory", factories.get(0));
@@ -53,8 +49,6 @@ public class PerformanceController {
         return "performance-select";
     }
 
-
-
     @GetMapping("/performance/{factoryId}")
     public String performanceByQuarter(
             @PathVariable Long factoryId,
@@ -63,11 +57,8 @@ public class PerformanceController {
             Model model,
             Principal principal) {
 
-        if (principal == null) {
-            return "redirect:/login";
-        }
+        if (principal == null) return "redirect:/login";
 
-        // defaults
         if (fy == null) fy = "FY26";
         if (quarter == null) quarter = "Q2";
 
@@ -78,8 +69,13 @@ public class PerformanceController {
             return "redirect:/factories";
         }
 
-        List<KpiRecord> kpis =
-                kpiRepo.findByFactoryAndFyAndQuarter(factory, fy, quarter);
+        // pega tudo do quarter...
+        List<KpiRecord> all = kpiRepo.findByFactoryAndFyAndQuarter(factory, fy, quarter);
+
+        // ✅ PERFORMANCE = só MQAAS/BTP/DEFECT (ignora OPERATION)
+        List<KpiRecord> kpis = all.stream()
+                .filter(this::isPerformanceKpi)
+                .toList();
 
         double totalPoints = kpis.stream()
                 .mapToDouble(KpiRecord::getPoints)
@@ -103,4 +99,9 @@ public class PerformanceController {
         return "performance-quarter";
     }
 
+    private boolean isPerformanceKpi(KpiRecord k) {
+        if (k == null || k.getType() == null) return false;
+        String t = k.getType().trim().toUpperCase();
+        return t.equals("MQAAS") || t.equals("BTP") || t.equals("DEFECT");
+    }
 }

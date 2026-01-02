@@ -20,6 +20,9 @@ public class OperationKpiService {
         this.factoryRepo = factoryRepo;
     }
 
+    // =========================
+    // SAVE (já funcionava)
+    // =========================
     public void save(Long factoryId, OperationKpiDTO dto) {
 
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
@@ -44,9 +47,58 @@ public class OperationKpiService {
         r.setMetric(metric);
         r.setFy(dto.getFy());
         r.setQuarter(dto.getQuarter());
-        r.setMonthRef(dto.getMonthRef());
+
+        // ✅ monthRef obrigatório no seu model -> garante valor
+        String monthRef = dto.getMonthRef();
+        if (monthRef == null || monthRef.isBlank()) {
+            monthRef = "ALL";
+        }
+        r.setMonthRef(monthRef);
+
         r.setKpiValue(value.doubleValue());
 
         repo.save(r);
+    }
+
+    // =========================
+    // READ – ONE PAGER (Quarter)
+    // =========================
+    public OperationKpiDTO getOperationKpi(Long factoryId,
+                                           String fy,
+                                           String quarter) {
+        return getOperationKpi(factoryId, fy, quarter, null);
+    }
+
+    // =========================
+    // ✅ READ – ONE PAGER (Month opcional)
+    // =========================
+    public OperationKpiDTO getOperationKpi(Long factoryId,
+                                           String fy,
+                                           String quarter,
+                                           String monthRef) {
+
+        OperationKpiDTO dto = new OperationKpiDTO();
+
+        dto.setPairsProduced(
+                repo.sumMetricWithMonth(factoryId, "PAIRS_PRODUCED", fy, quarter, monthRef)
+        );
+
+        dto.setWorkingDays(
+                repo.sumMetricWithMonth(factoryId, "WORKING_DAYS", fy, quarter, monthRef)
+        );
+
+        dto.setWorkforceNike(
+                repo.avgMetricWithMonth(factoryId, "WORKFORCE_NIKE", fy, quarter, monthRef)
+        );
+
+        dto.setPph(
+                repo.avgMetricWithMonth(factoryId, "PPH", fy, quarter, monthRef)
+        );
+
+        dto.setDr(
+                repo.avgMetricWithMonth(factoryId, "DR", fy, quarter, monthRef)
+        );
+
+        return dto;
     }
 }

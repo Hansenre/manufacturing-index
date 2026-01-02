@@ -16,6 +16,9 @@ public class OnePagerSummary {
 
     @ManyToOne
     private Factory factory;
+    
+    private String fy;
+    private String quarter;
 
     @Column(length = 2000)
     private String highlight;
@@ -65,6 +68,24 @@ public class OnePagerSummary {
 	public void setHelpNeeded(String helpNeeded) {
 		this.helpNeeded = helpNeeded;
 	}
+
+	public String getFy() {
+		return fy;
+	}
+
+	public void setFy(String fy) {
+		this.fy = fy;
+	}
+
+	public String getQuarter() {
+		return quarter;
+	}
+
+	public void setQuarter(String quarter) {
+		this.quarter = quarter;
+	}
+	
+	
 
     
 }

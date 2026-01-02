@@ -11,60 +11,49 @@ import com.manufacturing.manufacturingindex.dto.OperationKpiDTO;
 import com.manufacturing.manufacturingindex.model.OnePagerSummary;
 import com.manufacturing.manufacturingindex.repository.DefectTypeRepository;
 import com.manufacturing.manufacturingindex.repository.HfpiEventRepository;
-import com.manufacturing.manufacturingindex.repository.KpiRecordRepository;
 import com.manufacturing.manufacturingindex.repository.OnePagerSummaryRepository;
 
 @Service
 public class OnePagerService {
 
-    private final KpiRecordRepository kpiRepo;
+    private final OperationKpiService operationKpiService;
     private final HfpiEventRepository hfpiRepo;
     private final DefectTypeRepository defectRepo;
     private final OnePagerSummaryRepository summaryRepo;
 
-    public OnePagerService(KpiRecordRepository kpiRepo,
+    public OnePagerService(OperationKpiService operationKpiService,
                            HfpiEventRepository hfpiRepo,
                            DefectTypeRepository defectRepo,
                            OnePagerSummaryRepository summaryRepo) {
 
-        this.kpiRepo = kpiRepo;
+        this.operationKpiService = operationKpiService;
         this.hfpiRepo = hfpiRepo;
         this.defectRepo = defectRepo;
         this.summaryRepo = summaryRepo;
     }
 
     /* =====================
-       OPERATION KPI
-    ===================== */
-    public OperationKpiDTO getOperationKpi(Long factoryId) {
+       OPERATION KPI (com month opcional)
+       ===================== */
+    public OperationKpiDTO getOperationKpi(Long factoryId,
+                                           String fy,
+                                           String quarter,
+                                           String monthRef) {
 
-        Object[] row = kpiRepo.calculateOperationKpi(factoryId);
-
-        OperationKpiDTO dto = new OperationKpiDTO();
-
-        if (row == null || row.length != 5) {
-            return dto;
-        }
-
-        dto.setPairsProduced(row[0] != null ? ((Number) row[0]).intValue() : 0);
-        dto.setWorkingDays(row[1] != null ? ((Number) row[1]).intValue() : 0);
-        dto.setWorkforceNike(row[2] != null ? ((Number) row[2]).intValue() : 0);
-        dto.setPph(row[3] != null ? ((Number) row[3]).doubleValue() : 0.0);
-        dto.setDr(row[4] != null ? ((Number) row[4]).doubleValue() : 0.0);
-
-        return dto;
+        return operationKpiService.getOperationKpi(factoryId, fy, quarter, monthRef);
     }
 
     /* =====================
        EXECUTIVE SUMMARY
-    ===================== */
-    public OnePagerSummaryDTO getSummary(Long factoryId) {
+       ===================== */
+    public OnePagerSummaryDTO getSummary(Long factoryId,
+                                         String fy,
+                                         String quarter) {
 
-        OnePagerSummary entity = summaryRepo.findByFactoryId(factoryId);
+        OnePagerSummary entity =
+                summaryRepo.findByFactoryIdAndFyAndQuarter(factoryId, fy, quarter);
 
-        if (entity == null) {
-            return null; // view já trata com th:if
-        }
+        if (entity == null) return null;
 
         OnePagerSummaryDTO dto = new OnePagerSummaryDTO();
         dto.setHighlight(entity.getHighlight());
@@ -75,31 +64,41 @@ public class OnePagerService {
     }
 
     /* =====================
-       HFPI
-    ===================== */
-    public HfpiDTO getHfpi(Long factoryId) {
+       HFPI (placeholder)
+       ===================== */
+    public HfpiDTO getHfpi(Long factoryId,
+                           String fy,
+                           String quarter) {
 
         HfpiDTO dto = new HfpiDTO();
-
-        // Depois você liga isso com os cálculos reais
         dto.setHfpiGeral(0.0);
         dto.setHfpiFabrica(0.0);
         dto.setHfpiOnline(0.0);
-
         return dto;
     }
 
     /* =====================
        DR – TOP TYPES
-    ===================== */
-    public List<DrTopTypeDTO> getDrTopTypes(Long factoryId) {
+       ===================== */
+    public List<DrTopTypeDTO> getDrTopTypes(Long factoryId,
+                                           String fy,
+                                           String quarter) {
 
-        return defectRepo.findTopDefects(factoryId)
+        return defectRepo.findTopDefects(factoryId, fy, quarter)
                 .stream()
                 .map(row -> new DrTopTypeDTO(
                         (String) row[0],
                         ((Number) row[1]).longValue()
                 ))
                 .toList();
+    }
+
+    /* =====================
+       VOC – placeholder
+       ===================== */
+    public List<?> getVoc(Long factoryId,
+                          String fy,
+                          String quarter) {
+        return List.of();
     }
 }
