@@ -1,0 +1,72 @@
+/* Isolado: só afeta a tela que usa .one-pager-select */
+.one-pager-select .op-select-header {
+    margin-bottom: 14px;
+}
+
+.one-pager-select .op-select-header h2 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.one-pager-select .subtitle {
+    margin: 6px 0 0;
+    opacity: 0.75;
+}
+
+.one-pager-select .op-select-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    max-width: 980px;
+}
+
+.one-pager-select .op-select-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.one-pager-select .op-select-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: rgba(15, 23, 42, 0.06);
+}
+
+.one-pager-select .op-select-main {
+    flex: 1;
+}
+
+.one-pager-select .op-select-label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.one-pager-select .op-select-input {
+    width: 100%;
+    height: 46px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.12);
+    padding: 0 12px;
+    outline: none;
+}
+
+.one-pager-select .op-select-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    align-items: center;
+}
+
+.one-pager-select .op-select-help {
+    display: inline-block;
+    margin-top: 10px;
+    opacity: 0.7;
+}

@@ -55,20 +55,19 @@ public class OnePagerController {
 
         var factory = factoryRepo.findById(factoryId).orElseThrow();
 
-        if (fy == null || fy.isBlank()) fy = "FY25";
-        if (quarter == null || quarter.isBlank()) quarter = "Q3";
-        if (month == null) month = ""; // "" = All Months
+        if (fy == null || fy.isBlank()) fy = "FY26";
+        if (quarter == null || quarter.isBlank()) quarter = "Q1";
+
+        // month: "" = All Months
+        String monthRef = (month == null) ? "" : month.trim().toUpperCase();
+        if (monthRef.equals("ALL")) monthRef = "";
 
         model.addAttribute("factory", factory);
         model.addAttribute("fy", fy);
         model.addAttribute("quarter", quarter);
-        model.addAttribute("month", month);
+        model.addAttribute("month", monthRef);
 
-        // ✅ OPERATION KPI respeitando o month (se vier)
-        model.addAttribute(
-                "operationKpi",
-                service.getOperationKpi(factoryId, fy, quarter, month)
-        );
+        model.addAttribute("operationKpi", service.getOperationKpi(factoryId, fy, quarter, monthRef));
 
         model.addAttribute("hfpi", service.getHfpi(factoryId, fy, quarter));
         model.addAttribute("summary", service.getSummary(factoryId, fy, quarter));
@@ -78,10 +77,11 @@ public class OnePagerController {
         model.addAttribute("fyList", List.of("FY24", "FY25", "FY26"));
         model.addAttribute("quarters", List.of("Q1", "Q2", "Q3", "Q4"));
 
-        // ✅ lista de meses (tem que bater com o que você salva no monthRef)
-        model.addAttribute("months", List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"));
+        // ✅ TEM que bater com o monthRef salvo no banco
+        model.addAttribute("months", List.of(
+                "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"
+        ));
 
         return "one-pager/view";
     }
-
 }
