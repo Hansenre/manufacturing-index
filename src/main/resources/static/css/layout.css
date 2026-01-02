@@ -473,6 +473,147 @@ button:hover,
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
+/* =========================
+   ONE PAGER DASHBOARD CARD
+========================= */
+
+.card-onepager {
+    position: relative;
+
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    color: #ffffff;
+
+    border-radius: 18px;
+    padding: 24px;
+
+    text-decoration: none;
+
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Glow sutil */
+.card-onepager::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at top right,
+        rgba(255,255,255,0.25),
+        transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Hover */
+.card-onepager:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 25px 45px rgba(37, 99, 235, 0.45);
+}
+
+.card-onepager:hover::before {
+    opacity: 1;
+}
+
+/* Icon */
+.card-onepager .card-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+/* Title */
+.card-onepager .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+/* Subtitle */
+.card-onepager .card-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* =========================
+   VOC FORM
+========================= */
+
+.voc-score-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.voc-score-wrapper input[type="range"] {
+    flex: 1;
+    height: 6px;
+    border-radius: 10px;
+    background: linear-gradient(
+        90deg,
+        #dc2626,
+        #f59e0b,
+        #16a34a
+    );
+    outline: none;
+}
+
+.voc-score-wrapper output {
+    min-width: 50px;
+    padding: 6px 10px;
+    background: #111827;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* =========================
+   VOC TABLE
+========================= */
+
+.table td:last-child {
+    font-weight: 700;
+}
+
+/* VOC color coding */
+.voc-high {
+    color: #16a34a;
+}
+
+.voc-medium {
+    color: #f59e0b;
+}
+
+.voc-low {
+    color: #dc2626;
+}
+
+.voc-summary-card {
+    background: linear-gradient(135deg, #1f2937, #111827);
+    color: #fff;
+    padding: 20px;
+    border-radius: 18px;
+    margin: 30px 0;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.35);
+}
+
+.voc-summary-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.voc-summary-value {
+    font-size: 42px;
+    font-weight: 800;
+}
+
+
+
+
 
 
 

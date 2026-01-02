@@ -1,0 +1,331 @@
+
+/* =====================================================
+   BASE LAYOUT (substitui layout.css só para esta página)
+===================================================== */
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: #0b1220; /* pode ajustar */
+  color: #e5e7eb;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+  min-width: 0;
+}
+
+
+
+/* ================= RESET ISOLADO ================= */
+.one-pager,
+.one-pager * {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ================= PDF WRAPPER ================= */
+.one-pager-pdf {
+    width: 100%;
+    background: #eaecef;
+}
+
+.one-pager {
+    width: 1600px;
+    margin: 0 auto;
+    padding: 24px;
+    background: #f4f6f9;
+}
+
+/* ================= HEADER ================= */
+.one-pager-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 24px;
+    align-items: center;
+
+    background: #fff;
+    padding: 18px 22px;
+    border-radius: 10px;
+    border-left: 6px solid #000;
+    margin-bottom: 24px;
+}
+
+.one-pager-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.one-pager-filter form {
+    display: flex;
+    gap: 10px;
+}
+
+.one-pager-filter select,
+.one-pager-filter button {
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+/* ================= SECTION ================= */
+.op-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.op-section h3 {
+    margin: 0 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #000;
+    font-size: 15px;
+}
+
+/* ================= TOP GRID ================= */
+.kpi-top-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+/* ================= KPI TABLE ================= */
+.kpi-table {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.kpi-table div {
+    background: #000;
+    color: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.kpi-table strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 6px;
+}
+
+/* ================= QUALITY ================= */
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.quality-card {
+    border: 2px solid #000;
+    border-radius: 18px;
+    padding: 16px;
+    text-align: center;
+}
+
+/* ================= MAIN GRID ================= */
+.one-pager-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+/* ================= HFPI ================= */
+.hfpi-box {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.hfpi-box div {
+    background: #f0f3f7;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+
+.hfpi-box strong {
+    font-size: 22px;
+    color: #1a7f37;
+}
+
+/* ================= DR ================= */
+.dr-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dr-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+}
+
+/* ================= SUMMARY ================= */
+.summary-box {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.summary-box div {
+    background: #f0f3f7;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1200px) {
+    .one-pager-header {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quality-grid,
+    .summary-box,
+    .one-pager-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .kpi-table,
+    .quality-grid,
+    .hfpi-box {
+        grid-template-columns: 1fr;
+    }
+
+    .one-pager-filter form {
+        flex-direction: column;
+    }
+}
+
+/* =====================================================
+   TOP LINKS (Dashboard / Factories / Performance / Logout)
+   - Override local para não depender do CSS global
+===================================================== */
+
+/* 1) Se existir uma barra/topo com links dentro do content */
+.content > a,
+.content > p > a,
+.content > div > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    margin-right: 8px;
+
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+
+    color: #111827;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.content > a:hover,
+.content > p > a:hover,
+.content > div > a:hover {
+    background: #f3f4f6;
+}
+
+.content > a:active,
+.content > p > a:active,
+.content > div > a:active {
+    transform: translateY(1px);
+}
+
+/* 2) Se os links estiverem dentro da sidebar (menu lateral) */
+.sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 12px;
+    margin: 6px 10px;
+
+    border-radius: 10px;
+    text-decoration: none;
+
+    color: #e5e7eb;
+    font-weight: 700;
+    font-size: 13px;
+    transition: background 0.15s ease;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* 3) Estilo especial para Logout (detecta pelo href) */
+a[href*="logout"],
+a[href*="/logout"] {
+    border-color: #fecaca !important;
+    color: #b91c1c !important;
+}
+
+a[href*="logout"]:hover,
+a[href*="/logout"]:hover {
+    background: #fee2e2 !important;
+}
+
+/* 4) Se seus botões "Change Factory" usam .btn-secondary, padroniza aqui */
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+
+    color: #111827;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.btn-secondary:hover {
+    background: #f3f4f6;
+}
+
+/* 5) Botão Apply (sem depender de .btn-primary global) */
+.one-pager-filter button {
+    border: 1px solid #111827;
+    background: #111827;
+    color: #fff;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.one-pager-filter button:hover {
+    filter: brightness(1.08);
+}
+

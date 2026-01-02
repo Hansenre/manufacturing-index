@@ -1,25 +1,23 @@
 package com.manufacturing.manufacturingindex.controller;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.manufacturing.manufacturingindex.model.BestPractice;
-import com.manufacturing.manufacturingindex.model.Btp;
-import com.manufacturing.manufacturingindex.model.DefectReturns;
+import com.manufacturing.manufacturingindex.dto.OperationKpiDTO;
+import com.manufacturing.manufacturingindex.dto.OperationKpiViewDTO;
 import com.manufacturing.manufacturingindex.model.Factory;
 import com.manufacturing.manufacturingindex.model.KpiRecord;
-import com.manufacturing.manufacturingindex.model.Mqaas;
 import com.manufacturing.manufacturingindex.model.User;
 import com.manufacturing.manufacturingindex.repository.FactoryRepository;
 import com.manufacturing.manufacturingindex.repository.KpiRecordRepository;
 import com.manufacturing.manufacturingindex.repository.UserRepository;
 
 @Controller
-@RequestMapping("/kpis")
+@RequestMapping("/kpi/operation")
 public class KpiController {
 
     private final FactoryRepository factoryRepo;
@@ -34,198 +32,103 @@ public class KpiController {
         this.kpiRepo = kpiRepo;
     }
 
-    // =====================================================
-    // LISTAR KPIs DE UMA FÁBRICA
-    // =====================================================
-   
-    @GetMapping("/{factoryId}")
-    public String listKpis(@PathVariable Long factoryId,
-                           Model model,
-                           Principal principal) {
+    /* ===============================
+       FORM + LIST
+    =============================== */
+    @GetMapping("/new/{factoryId}")
+    public String newOperationKpi(@PathVariable Long factoryId,
+                                  Model model,
+                                  Principal principal) {
 
-        if (principal == null) {
-            return "redirect:/login";
-        }
+        validateOwnership(factoryId, principal);
 
-        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
 
-        if (factory.getOwner() == null ||
-            !factory.getOwner().getId().equals(user.getId())) {
-            return "redirect:/factories";
-        }
+        // 🔹 BUSCA TODOS OS KPIs DA FÁBRICA
+        List<KpiRecord> records =
+                kpiRepo.findByFactoryId(factoryId);
 
-        List<KpiRecord> kpis = kpiRepo.findByFactory(factory);
-        List<Factory> factories = factoryRepo.findByOwner(user); // 🔥 AQUI
+        // 🔹 CONSOLIDA (FY + Quarter + Month)
+        Map<String, OperationKpiViewDTO> map = new LinkedHashMap<>();
+
+        for (KpiRecord r : records) {
+
+            String key = r.getFy() + "-" + r.getQuarter() + "-" + r.getMonthRef();
+
+            OperationKpiViewDTO view =
+                    map.getOrDefault(key, new OperationKpiViewDTO());
+
+            view.setFy(r.getFy());
+            view.setQuarter(r.getQuarter());
+            view.setMonthRef(r.getMonthRef());
+
+            switch (r.getMetric()) {
+                case "PAIRS_PRODUCED" -> view.setPairsProduced(r.getKpiValue());
+                case "WORKING_DAYS" -> view.setWorkingDays(r.getKpiValue());
+                case "WORKFORCE_NIKE" -> view.setWorkforceNike(r.getKpiValue());
+                case "PPH" -> view.setPph(r.getKpiValue());
+                case "DR" -> view.setDr(r.getKpiValue());
+            }
+
+            map.put(key, view);
+        }
 
         model.addAttribute("factory", factory);
-        model.addAttribute("kpis", kpis);
-        model.addAttribute("factories", factories); // 🔥 E AQUI
+        model.addAttribute("form", new OperationKpiDTO());
+        model.addAttribute("existingKpis", new ArrayList<>(map.values()));
 
-        return "kpis";
+        return "kpi/operation-form";
     }
 
-
-    // =====================================================
-    // FORMULÁRIOS DE CRIAÇÃO
-    // =====================================================
-
-    // ---- MQAAS ----
-    @GetMapping("/new/mqaas/{factoryId}")
-    public String newMqaasForm(@PathVariable Long factoryId,
-                               Model model,
-                               Principal principal) {
+    /* ===============================
+       SAVE
+    =============================== */
+    @PostMapping("/save/{factoryId}")
+    public String saveOperationKpi(@PathVariable Long factoryId,
+                                   @ModelAttribute("form") OperationKpiDTO form,
+                                   Principal principal) {
 
         validateOwnership(factoryId, principal);
-        model.addAttribute("factoryId", factoryId);
 
-        return "kpi-form-mqaas";
-    }
-
-    // ---- BTP ----
-    @GetMapping("/new/btp/{factoryId}")
-    public String newBtpForm(@PathVariable Long factoryId,
-                             Model model,
-                             Principal principal) {
-
-        validateOwnership(factoryId, principal);
-        model.addAttribute("factoryId", factoryId);
-
-        return "kpi-form-btp";
-    }
-
-    // ---- DEFECT RETURNS ----
-    @GetMapping("/new/defect/{factoryId}")
-    public String newDefectForm(@PathVariable Long factoryId,
-                                Model model,
-                                Principal principal) {
-
-        validateOwnership(factoryId, principal);
-        model.addAttribute("factoryId", factoryId);
-
-        return "kpi-form-defect";
-    }
-
-    // =====================================================
-    // EDITAR KPI
-    // =====================================================
-    @GetMapping("/{id}/edit")
-    public String editKpi(@PathVariable Long id,
-                          Model model,
-                          Principal principal) {
-
-        KpiRecord kpi = kpiRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid KPI Id: " + id));
-
-        validateOwnership(kpi.getFactory().getId(), principal);
-
-        model.addAttribute("kpi", kpi);
-        return "kpi-edit";
-    }
-
-    // =====================================================
-    // ATUALIZAR KPI
-    // =====================================================
-    @PostMapping("/{id}/update")
-    public String updateKpi(@PathVariable Long id,
-                            @ModelAttribute KpiRecord kpi,
-                            Principal principal) {
-
-        KpiRecord existing = kpiRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid KPI Id: " + id));
-
-        validateOwnership(existing.getFactory().getId(), principal);
-
-        // garante que a factory não seja alterada
-        kpi.setFactory(existing.getFactory());
-
-        kpiRepo.save(kpi);
-
-        return "redirect:/kpis/" + existing.getFactory().getId();
-    }
-
-    // =====================================================
-    // DELETAR KPI
-    // =====================================================
-    @GetMapping("/{id}/delete")
-    public String deleteKpi(@PathVariable Long id,
-                            Principal principal) {
-
-        KpiRecord kpi = kpiRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid KPI Id: " + id));
-
-        validateOwnership(kpi.getFactory().getId(), principal);
-
-        Long factoryId = kpi.getFactory().getId();
-        kpiRepo.deleteById(id);
-
-        return "redirect:/kpis/" + factoryId;
-    }
-
-    // =====================================================
-    // SALVAR KPI (POST ÚNICO)
-    // =====================================================
-    @PostMapping
-    public String saveKpi(@RequestParam Long factoryId,
-                          @RequestParam String fy,
-                          @RequestParam String quarter,
-                          @RequestParam String type,
-                          @RequestParam int a,
-                          @RequestParam int b,
-                          @RequestParam(required = false) Double price,
-                          Principal principal) {
-
-        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
 
-        if (!factory.getOwner().getId().equals(user.getId())) {
-            return "redirect:/factories";
-        }
+        save(factory, form, "PAIRS_PRODUCED", form.getPairsProduced());
+        save(factory, form, "WORKING_DAYS", form.getWorkingDays());
+        save(factory, form, "WORKFORCE_NIKE", form.getWorkforceNike());
+        save(factory, form, "PPH", form.getPph());
+        save(factory, form, "DR", form.getDr());
 
-        BestPractice kpi;
-
-        switch (type) {
-
-            case "MQAAS":
-                kpi = new Mqaas(fy, quarter, factory.getName(), a, b);
-                break;
-
-            case "BTP":
-                kpi = new Btp(fy, quarter, factory.getName(), a, b);
-                break;
-
-            case "DEFECT":
-                if (price == null) {
-                    throw new IllegalArgumentException(
-                            "Wholesale price is required for Defect Returns");
-                }
-                kpi = new DefectReturns(fy, quarter, factory.getName(), a, b, price);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Invalid KPI type");
-        }
-
-        double points = kpi.calculateIndex();
-
-        KpiRecord record = new KpiRecord(
-                fy,
-                quarter,
-                type,
-                kpi.getPorcentage(),
-                points,
-                factory
-        );
-
-        kpiRepo.save(record);
-
-        return "redirect:/kpis/" + factoryId;
+        return "redirect:/kpi/operation/new/" + factoryId;
     }
 
-    // =====================================================
-    // SEGURANÇA AUXILIAR
-    // =====================================================
+    /* ===============================
+       AUX
+    =============================== */
+    private void save(Factory factory,
+                      OperationKpiDTO dto,
+                      String metric,
+                      Number value) {
+
+        if (value == null) return;
+
+        KpiRecord r = new KpiRecord();
+        r.setFactory(factory);
+        r.setType("OPERATION");
+        r.setMetric(metric);
+        r.setFy(dto.getFy());
+        r.setQuarter(dto.getQuarter());
+        r.setMonthRef(dto.getMonthRef());
+        r.setKpiValue(value.doubleValue());
+        r.setPoints(0.0);
+
+        kpiRepo.save(r);
+    }
+
     private void validateOwnership(Long factoryId, Principal principal) {
+
+        if (principal == null) {
+            throw new RuntimeException("User not authenticated");
+        }
 
         User user = userRepo.findByUsername(principal.getName()).orElseThrow();
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();

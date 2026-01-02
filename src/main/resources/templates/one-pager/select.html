@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Factory</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
+</head>
+
+<body>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+        <h2>📄 One Pager</h2>
+        <p>Select a factory to manage One Pager data</p>
+
+        <form th:action="@{/one-pager/manage}" method="get">
+            <label>Factory</label>
+            <select name="factoryId" required>
+                <option value="">-- Select Factory --</option>
+                <option th:each="f : ${factories}"
+                        th:value="${f.id}"
+                        th:text="${f.name}">
+                </option>
+            </select>
+
+            <br><br>
+            <button type="submit" class="btn-primary">
+                Continue →
+            </button>
+        </form>
+
+        <br>
+        <a th:href="@{/}" class="btn-secondary">⬅ Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

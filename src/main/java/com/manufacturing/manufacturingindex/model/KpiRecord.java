@@ -16,8 +16,11 @@ public class KpiRecord {
     @Column(nullable = false)
     private String quarter;
 
+    @Column(name = "month_ref", nullable = false)
+    private String monthRef;
+
     @Column(nullable = false)
-    private String type;   // MQAAS, BTP, DEFECT
+    private String type;   // PAIRS_PRODUCED, WORKING_DAYS, PPH...
 
     @Column(name = "kpi_value", nullable = false)
     private double kpiValue;
@@ -28,15 +31,21 @@ public class KpiRecord {
     @ManyToOne
     @JoinColumn(name = "factory_id", nullable = false)
     private Factory factory;
+    @Column(nullable = false)
+    private String metric;
 
-    // 🔹 Construtor padrão (obrigatório para JPA)
+
+    // =====================
+    // CONSTRUTORES
+    // =====================
+
     public KpiRecord() {
     }
 
-    // 🔹 Construtor completo
     public KpiRecord(
             String fy,
             String quarter,
+            String monthRef,
             String type,
             double kpiValue,
             double points,
@@ -44,13 +53,17 @@ public class KpiRecord {
     ) {
         this.fy = fy;
         this.quarter = quarter;
+        this.monthRef = monthRef;
         this.type = type;
         this.kpiValue = kpiValue;
         this.points = points;
         this.factory = factory;
     }
 
-    // 🔹 Getters e Setters
+    // =====================
+    // GETTERS / SETTERS
+    // =====================
+
     public Long getId() {
         return id;
     }
@@ -69,6 +82,14 @@ public class KpiRecord {
 
     public void setQuarter(String quarter) {
         this.quarter = quarter;
+    }
+
+    public String getMonthRef() {
+        return monthRef;
+    }
+
+    public void setMonthRef(String monthRef) {
+        this.monthRef = monthRef;
     }
 
     public String getType() {
@@ -102,4 +123,14 @@ public class KpiRecord {
     public void setFactory(Factory factory) {
         this.factory = factory;
     }
+
+	public String getMetric() {
+		return metric;
+	}
+
+	public void setMetric(String metric) {
+		this.metric = metric;
+	}
+    
+    
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>One Pager Management</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
+</head>
+
+<body>
+
+<div class="container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <div class="content">
+
+        <h2>📄 One Pager Management</h2>
+        <p th:text="'Factory: ' + ${factory.name}"></p>
+
+        <div class="action-grid">
+
+            <a th:href="@{/kpi/operation/new/{id}(id=${factory.id})}"
+               class="action-card">
+                📊 Operation KPI
+            </a>
+
+            <div class="action-card disabled">
+                🧪 HFPI (Auto)
+            </div>
+
+            <a th:href="@{/voc/{id}(id=${factory.id})}"
+               class="action-card">
+                🌱 VOC (gr/pairs)
+            </a>
+
+            <a th:href="@{/waste/new/{id}(id=${factory.id})}"
+               class="action-card">
+                ♻ Waste
+            </a>
+
+            <a th:href="@{/dr/new/{id}(id=${factory.id})}"
+               class="action-card">
+                🚨 DR
+            </a>
+
+            <a th:href="@{/summary/new/{id}(id=${factory.id})}"
+               class="action-card">
+                📝 Executive Summary
+            </a>
+
+            <a th:href="@{/one-pager/{id}(id=${factory.id})}"
+               class="action-card highlight">
+                👁 View One Pager
+            </a>
+
+        </div>
+
+        <br>
+        <a th:href="@{/one-pager}" class="btn-secondary">
+            ⬅ Change Factory
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>

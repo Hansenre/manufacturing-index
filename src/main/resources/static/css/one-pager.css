@@ -1,0 +1,754 @@
+/* =========================
+   ONE PAGER - BASE
+========================= */
+
+.one-pager {
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.one-pager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 6px solid #000;
+    margin-bottom: 20px;
+}
+
+.one-pager-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* =========================
+   SECTION BASE
+========================= */
+
+.op-section {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.op-section h3 {
+    margin: 0 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #000;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* =========================
+   OPERATION KPI TABLE
+========================= */
+
+.kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.kpi-table th {
+    background: #000;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.kpi-table td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+}
+
+/* =========================
+   HFPI GROUP
+========================= */
+
+.hfpi-box {
+    display: flex;
+    justify-content: space-around;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.hfpi-box div {
+    flex: 1;
+    background: #f0f3f7;
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+}
+
+.hfpi-box span {
+    display: block;
+    font-size: 12px;
+    color: #555;
+}
+
+.hfpi-box strong {
+    font-size: 22px;
+    color: #1a7f37;
+}
+
+/* =========================
+   CHARTS
+========================= */
+
+.op-section canvas {
+    width: 100% !important;
+    max-height: 260px;
+    margin-top: 10px;
+}
+
+/* =========================
+   EXECUTIVE SUMMARY
+========================= */
+
+.summary-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.summary-box div {
+    background: #f0f3f7;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.summary-box h4 {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 2px solid #000;
+    padding-bottom: 4px;
+}
+
+.summary-box p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn-secondary {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 8px 14px;
+    background: #000;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.btn-secondary:hover {
+    background: #333;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .hfpi-box {
+        flex-direction: column;
+    }
+
+    .summary-box {
+        grid-template-columns: 1fr;
+    }
+
+    .one-pager-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.action-card {
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #111;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.action-card.highlight {
+    background: #111;
+    color: white;
+}
+
+/* =========================
+   ONE PAGER GRID (PDF STYLE)
+========================= */
+
+.one-pager-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+/* Colunas fixas */
+.col-12 { grid-column: span 12; }
+.col-8  { grid-column: span 8; }
+.col-6  { grid-column: span 6; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+
+/* Ajuste visual mais "PDF" */
+.pdf-card {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 14px;
+    box-shadow: none;
+    border: 1px solid #dcdcdc;
+}
+
+/* =========================
+   PDF SECTION TITLE
+========================= */
+
+.pdf-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 3px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+}
+
+/* =========================
+   KPI METRIC (PDF STYLE)
+========================= */
+
+.kpi-metric {
+    text-align: center;
+}
+
+.kpi-metric span {
+    font-size: 12px;
+    color: #555;
+}
+
+.kpi-metric strong {
+    display: block;
+    font-size: 26px;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
+.kpi-green { color: #1a7f37; }
+.kpi-yellow { color: #f1c40f; }
+.kpi-red { color: #c0392b; }
+
+}
+
+.image-metric {
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    border: 2px solid #000;
+    text-align: center;
+}
+
+.image-metric img {
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+/* =========================
+   KPI QUALITY METRICS (PDF STYLE)
+========================= */
+
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.quality-card {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 22px;
+    padding: 14px;
+    text-align: center;
+}
+
+.quality-card h4 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.quality-card small {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #444;
+}
+
+.quality-card img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   KPI QUALITY METRICS (PDF STYLE)
+========================= */
+
+.kpi-right {
+    margin-top: 18px;
+}
+
+.kpi-right h3 {
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 3px solid #000;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* GRID HORIZONTAL */
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    align-items: stretch;
+}
+
+/* CARD */
+.quality-card {
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 14px;
+    text-align: center;
+    background: #fff;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* TITLES */
+.quality-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.quality-card small {
+    font-size: 12px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* IMAGE PLACEHOLDER */
+.quality-card img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    margin: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   OP KPI + QUALITY METRICS
+========================= */
+
+.kpi-top-grid {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.kpi-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-right {
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   QUALITY METRICS GRID
+========================= */
+
+.quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.quality-card {
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    background: #fff;
+}
+
+.quality-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.quality-card small {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.quality-card img {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+    .kpi-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.one-pager-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.one-pager-filter select {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.one-pager-filter button {
+    padding: 6px 14px;
+}
+
+.kpi-table {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.kpi-table div {
+    background: #000;
+    color: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+
+.kpi-table strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 6px;
+}
+
+/* =====================================================
+   ONE PAGER – AJUSTES FINAIS (SEM IMPACTAR OUTRAS TELAS)
+===================================================== */
+
+/* OPERATION KPI – cards pretos (somente no One Pager) */
+.one-pager .kpi-table {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    border-collapse: unset;
+}
+
+.one-pager .kpi-table th,
+.one-pager .kpi-table td {
+    display: none; /* garante que tabela antiga não interfira */
+}
+
+.one-pager .kpi-table div {
+    background: #000;
+    color: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.one-pager .kpi-table strong {
+    display: block;
+    font-size: 20px;
+    margin-top: 6px;
+}
+
+/* KPI TOP GRID – garante proporção correta */
+.one-pager .kpi-top-grid {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* QUALITY METRICS – escopo One Pager */
+.one-pager .quality-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.one-pager .quality-card {
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    background: #fff;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.one-pager .quality-card img {
+    max-width: 100%;
+    max-height: 160px;
+    object-fit: contain;
+    margin: auto;
+}
+
+/* HFPI – ocupa corretamente o espaço */
+.one-pager .hfpi-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* EXECUTIVE SUMMARY – 3 colunas fixas */
+.one-pager .summary-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* RESPONSIVE – somente One Pager */
+@media (max-width: 1100px) {
+    .one-pager .kpi-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .one-pager .quality-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .one-pager .summary-box {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   KPI CARDS – MID SCREENS FIX
+   (laptops / telas médias)
+========================= */
+
+@media (max-width: 1400px) and (min-width: 901px) {
+
+    /* KPI cards quebram em 3 + 2 */
+    .kpi-table {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+
+    .kpi-table {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .kpi-table {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   ONE PAGER – RESPONSIVE FIX
+========================= */
+
+/* Tablets e telas médias */
+@media (max-width: 1200px) {
+
+    /* Header */
+    .one-pager-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .one-pager-filter {
+        width: 100%;
+    }
+
+    .one-pager-filter form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* KPI TOP GRID */
+    .kpi-top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* KPI cards */
+    .kpi-table {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Quality cards */
+    .quality-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* 2-column grids */
+    .one-pager-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    /* Header */
+    .one-pager-header h2 {
+        font-size: 16px;
+    }
+
+    /* Filters */
+    .one-pager-filter form {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .one-pager-filter select,
+    .one-pager-filter button {
+        width: 100%;
+    }
+
+    /* KPI cards – 1 por linha */
+    .kpi-table {
+        grid-template-columns: 1fr;
+    }
+
+    /* Quality cards – 1 por linha */
+    .quality-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* HFPI */
+    .hfpi-box {
+        flex-direction: column;
+    }
+
+    /* Summary */
+    .summary-box {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================================================
+   NEUTRALIZA ONE PAGER EXECUTIVE
+   (layout controlado no one-pager-view.css)
+===================================================== */
+
+.one-pager .kpi-table,
+.one-pager .quality-grid,
+.one-pager .kpi-top-grid,
+.one-pager .one-pager-grid,
+.one-pager .hfpi-box,
+.one-pager .summary-box {
+    all: unset;
+    display: revert;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

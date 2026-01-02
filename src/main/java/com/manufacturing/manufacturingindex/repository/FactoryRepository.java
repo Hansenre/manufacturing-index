@@ -10,4 +10,6 @@ import com.manufacturing.manufacturingindex.model.User;
 public interface FactoryRepository extends JpaRepository<Factory, Long> {
 
     List<Factory> findByOwner(User owner);
+
+    List<Factory> findByOwnerUsername(String username);
 }

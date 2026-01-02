@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Operation KPI</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/forms.css}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="content">
+
+        <h2>📊 Operation KPI</h2>
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
+
+        <form th:action="@{/kpi/operation/save/{factoryId}(factoryId=${factory.id})}"
+              th:object="${form}"
+              method="post"
+              class="form-card">
+
+            <!-- =========================
+                 PERIOD
+            ========================== -->
+
+            <h3>📅 Period</h3>
+
+            <label>Fiscal Year (FY)</label>
+            <input type="text"
+                   th:field="*{fy}"
+                   placeholder="FY25"
+                   required />
+
+            <label>Quarter</label>
+            <select th:field="*{quarter}" required>
+                <option value="">Select Quarter</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+            </select>
+
+            <label>Month</label>
+            <select th:field="*{monthRef}" required>
+                <option value="">Select Month</option>
+                <option value="JAN">January</option>
+                <option value="FEB">February</option>
+                <option value="MAR">March</option>
+                <option value="APR">April</option>
+                <option value="MAY">May</option>
+                <option value="JUN">June</option>
+                <option value="JUL">July</option>
+                <option value="AUG">August</option>
+                <option value="SEP">September</option>
+                <option value="OCT">October</option>
+                <option value="NOV">November</option>
+                <option value="DEC">December</option>
+            </select>
+
+            <hr>
+
+            <!-- =========================
+                 KPI VALUES
+            ========================== -->
+
+            <h3>📈 KPI Values</h3>
+
+            <label>Pairs Produced</label>
+            <input type="number"
+                   th:field="*{pairsProduced}"
+                   min="0" />
+
+            <label>Working Days</label>
+            <input type="number"
+                   th:field="*{workingDays}"
+                   min="0" />
+
+            <label>Workforce Nike</label>
+            <input type="number"
+                   th:field="*{workforceNike}"
+                   min="0" />
+
+            <label>PPH</label>
+            <input type="number"
+                   step="0.01"
+                   th:field="*{pph}" />
+
+            <label>DR (&lt; 0.15%)</label>
+            <input type="number"
+                   step="0.01"
+                   th:field="*{dr}" />
+
+            <!-- =========================
+                 ACTIONS
+            ========================== -->
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    💾 Save KPI
+                </button>
+
+                <a th:href="@{/one-pager/manage(factoryId=${factory.id})}"
+                   class="btn-secondary">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+		
+		<!-- =========================
+		     EXISTING KPIs (HISTORY)
+		========================== -->
+
+		<div class="form-card" style="margin-top: 30px;">
+
+		    <h3>📊 KPIs already registered for this Factory</h3>
+
+		    <table class="table">
+		        <thead>
+		        <tr>
+		            <th>FY</th>
+		            <th>Quarter</th>
+		            <th>Month</th>
+		            <th>Pairs</th>
+		            <th>Working Days</th>
+		            <th>Workforce</th>
+		            <th>PPH</th>
+		            <th>DR</th>
+		        </tr>
+		        </thead>
+
+		        <tbody>
+		        <tr th:each="kpi : ${existingKpis}">
+		            <td th:text="${kpi.fy}"></td>
+		            <td th:text="${kpi.quarter}"></td>
+		            <td th:text="${kpi.monthRef}"></td>
+		            <td th:text="${kpi.pairsProduced}"></td>
+		            <td th:text="${kpi.workingDays}"></td>
+		            <td th:text="${kpi.workforceNike}"></td>
+		            <td th:text="${kpi.pph}"></td>
+		            <td th:text="${kpi.dr}"></td>
+		        </tr>
+
+		        <tr th:if="${#lists.isEmpty(existingKpis)}">
+		            <td colspan="8" style="text-align:center; opacity:0.6;">
+		                No KPI records found for this factory
+		            </td>
+		        </tr>
+		        </tbody>
+		    </table>
+
+		</div>
+
+
+    </div>
+</div>
+
+</body>
+</html>
