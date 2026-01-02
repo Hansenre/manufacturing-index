@@ -48,8 +48,9 @@
             </select>
 
             <label>Month</label>
+            <!-- ✅ permite ALL -->
             <select th:field="*{monthRef}" required>
-                <option value="">Select Month</option>
+                <option value="ALL">All Months</option>
                 <option value="JAN">January</option>
                 <option value="FEB">February</option>
                 <option value="MAR">March</option>
@@ -113,51 +114,68 @@
             </div>
 
         </form>
-		
-		<!-- =========================
-		     EXISTING KPIs (HISTORY)
-		========================== -->
 
-		<div class="form-card" style="margin-top: 30px;">
+        <!-- =========================
+             EXISTING KPIs (HISTORY)
+        ========================== -->
 
-		    <h3>📊 KPIs already registered for this Factory</h3>
+        <div class="form-card" style="margin-top: 30px;">
 
-		    <table class="table">
-		        <thead>
-		        <tr>
-		            <th>FY</th>
-		            <th>Quarter</th>
-		            <th>Month</th>
-		            <th>Pairs</th>
-		            <th>Working Days</th>
-		            <th>Workforce</th>
-		            <th>PPH</th>
-		            <th>DR</th>
-		        </tr>
-		        </thead>
+            <h3>📊 KPIs already registered for this Factory</h3>
 
-		        <tbody>
-		        <tr th:each="kpi : ${existingKpis}">
-		            <td th:text="${kpi.fy}"></td>
-		            <td th:text="${kpi.quarter}"></td>
-		            <td th:text="${kpi.monthRef}"></td>
-		            <td th:text="${kpi.pairsProduced}"></td>
-		            <td th:text="${kpi.workingDays}"></td>
-		            <td th:text="${kpi.workforceNike}"></td>
-		            <td th:text="${kpi.pph}"></td>
-		            <td th:text="${kpi.dr}"></td>
-		        </tr>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>FY</th>
+                    <th>Quarter</th>
+                    <th>Month</th>
+                    <th>Pairs</th>
+                    <th>Working Days</th>
+                    <th>Workforce</th>
+                    <th>PPH</th>
+                    <th>DR</th>
+                    <th>Actions</th> <!-- ✅ novo -->
+                </tr>
+                </thead>
 
-		        <tr th:if="${#lists.isEmpty(existingKpis)}">
-		            <td colspan="8" style="text-align:center; opacity:0.6;">
-		                No KPI records found for this factory
-		            </td>
-		        </tr>
-		        </tbody>
-		    </table>
+                <tbody>
+                <tr th:each="kpi : ${existingKpis}">
+                    <td th:text="${kpi.fy}"></td>
+                    <td th:text="${kpi.quarter}"></td>
+                    <td th:text="${kpi.monthRef}"></td>
+                    <td th:text="${#numbers.formatDecimal(kpi.pairsProduced, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(kpi.workingDays, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(kpi.workforceNike, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(kpi.pph, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(kpi.dr, 1, 2)}"></td>
 
-		</div>
+                    <!-- ✅ EDIT / DELETE por FY+Quarter+MonthRef -->
+                    <td style="white-space:nowrap;">
+                        <a class="btn-secondary"
+                           th:href="@{/kpi/operation/edit/{factoryId}(factoryId=${factory.id},
+                                     fy=${kpi.fy}, quarter=${kpi.quarter}, monthRef=${kpi.monthRef})}">
+                            ✏️ Edit
+                        </a>
 
+                        <a class="btn-danger"
+                           style="margin-left:8px;"
+                           th:href="@{/kpi/operation/delete/{factoryId}(factoryId=${factory.id},
+                                     fy=${kpi.fy}, quarter=${kpi.quarter}, monthRef=${kpi.monthRef})}"
+                           onclick="return confirm('Delete this Operation KPI set (FY/Quarter/Month)?');">
+                            🗑 Delete
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(existingKpis)}">
+                    <td colspan="9" style="text-align:center; opacity:0.6;">
+                        No KPI records found for this factory
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
 
     </div>
 </div>

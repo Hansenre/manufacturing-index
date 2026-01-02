@@ -1,19 +1,19 @@
 package com.manufacturing.manufacturingindex.repository;
 
-import com.manufacturing.manufacturingindex.model.Factory;
-import com.manufacturing.manufacturingindex.model.VocRecord;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.manufacturing.manufacturingindex.model.VocRecord;
 
 public interface VocRecordRepository extends JpaRepository<VocRecord, Long> {
 
-    List<VocRecord> findByFactoryOrderByCreatedAtDesc(Factory factory);
+    List<VocRecord> findByFactoryIdOrderByCreatedAtDesc(Long factoryId);
 
-    boolean existsByFactoryAndFyAndQuarterAndMonthRef(
-            Factory factory,
-            String fy,
-            String quarter,
-            String monthRef
+    Optional<VocRecord> findTopByFactoryIdOrderByCreatedAtDesc(Long factoryId);
+
+    Optional<VocRecord> findByFactoryIdAndFyAndQuarterAndMonthRef(
+            Long factoryId, String fy, String quarter, String monthRef
     );
 }

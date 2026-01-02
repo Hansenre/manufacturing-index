@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VOC</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/forms.css}">
+</head>
+
+<body>
+<div class="container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="content">
+
+        <h2>🌱 VOC</h2>
+
+        <p>
+            Factory:
+            <strong th:text="${factory.name}"></strong>
+        </p>
+
+        <!-- alerts -->
+        <div th:if="${success}" class="alert-success" th:text="${success}" style="margin-bottom:12px;"></div>
+        <div th:if="${error}" class="alert-error" th:text="${error}" style="margin-bottom:12px;"></div>
+
+        <!-- ✅ action condicional: create vs edit -->
+        <form th:action="${isEdit} ? @{/voc/{id}/edit(id=${form.id})} : @{/voc/save/{factoryId}(factoryId=${factory.id})}"
+              th:object="${form}"
+              method="post"
+              class="form-card"
+              id="vocForm">
+
+            <!-- ID (quando edita) -->
+            <input type="hidden" th:field="*{id}"/>
+
+            <h3>📅 Period</h3>
+
+            <label>FY</label>
+            <input type="text" th:field="*{fy}" placeholder="FY26" required/>
+
+            <label>Quarter</label>
+            <select th:field="*{quarter}" required>
+                <option value="">Select Quarter</option>
+                <option value="Q1">Q1</option>
+                <option value="Q2">Q2</option>
+                <option value="Q3">Q3</option>
+                <option value="Q4">Q4</option>
+            </select>
+
+            <label>Month</label>
+            <select th:field="*{monthRef}" required>
+                <option value="">Select Month</option>
+                <option value="JAN">JAN</option>
+                <option value="FEB">FEB</option>
+                <option value="MAR">MAR</option>
+                <option value="APR">APR</option>
+                <option value="MAY">MAY</option>
+                <option value="JUN">JUN</option>
+                <option value="JUL">JUL</option>
+                <option value="AUG">AUG</option>
+                <option value="SEP">SEP</option>
+                <option value="OCT">OCT</option>
+                <option value="NOV">NOV</option>
+                <option value="DEC">DEC</option>
+            </select>
+
+            <hr>
+
+            <h3>VOC Emission (gr/pairs)</h3>
+
+            <!-- slider -->
+            <div style="display:flex; align-items:center; gap:14px;">
+                <input type="range"
+                       min="0" max="60" step="0.1"
+                       th:field="*{voc}"
+                       id="vocSlider"
+                       style="flex:1;">
+
+                <div id="vocBox"
+                     style="min-width:64px; text-align:center; padding:10px 12px; border-radius:10px; background:#0e1726; color:#fff; font-weight:700;">
+                    0.0
+                </div>
+            </div>
+
+            <div class="form-actions" style="margin-top:16px;">
+                <button type="submit" class="btn-primary">
+                    <span th:text="${isEdit} ? '💾 Update VOC' : '💾 Save VOC'">💾 Save VOC</span>
+                </button>
+
+                <!-- quando está editando, volta pro modo "novo" -->
+                <a th:if="${isEdit}" th:href="@{/voc/{factoryId}(factoryId=${factory.id})}" class="btn-secondary">
+                    Cancel Edit
+                </a>
+
+                <a th:if="${!isEdit}" th:href="@{/one-pager/manage(factoryId=${factory.id})}" class="btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+        <!-- latest -->
+        <div class="form-card" style="margin-top:18px; text-align:center;">
+            <div style="opacity:0.8; margin-bottom:6px;">Latest VOC (gr/pairs)</div>
+            <div style="font-size:48px; font-weight:800;" th:text="${latestVoc != null ? latestVoc : 0.0}">0.0</div>
+        </div>
+
+        <!-- history -->
+        <div class="form-card" style="margin-top: 22px;">
+            <h3>🌱 VOC Emissions History</h3>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>FY</th>
+                    <th>Quarter</th>
+                    <th>Month</th>
+                    <th>VOC (gr/pairs)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <!-- ✅ lista certa: history -->
+                <tr th:each="v : ${history}">
+                    <td th:text="${v.fy}"></td>
+                    <td th:text="${v.quarter}"></td>
+                    <td th:text="${v.monthRef}"></td>
+                    <td th:text="${v.voc}"></td>
+                    <td>
+                        <!-- ✅ edit certo -->
+                        <a th:href="@{/voc/{id}/edit(id=${v.id})}">Edit</a>
+                        |
+                        <!-- ✅ delete certo -->
+                        <a th:href="@{/voc/{id}/delete(id=${v.id})}"
+                           onclick="return confirm('Delete this VOC record?');">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(history)}">
+                    <td colspan="5" style="text-align:center; opacity:0.6;">
+                        No VOC records found for this factory
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function(){
+        const slider = document.getElementById('vocSlider');
+        const box = document.getElementById('vocBox');
+        if (!slider || !box) return;
+
+        const sync = () => {
+            const val = Number(slider.value || 0).toFixed(1);
+            box.innerText = val;
+        };
+
+        slider.addEventListener('input', sync);
+        sync();
+    })();
+</script>
+
+</body>
+</html>
