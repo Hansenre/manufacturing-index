@@ -329,3 +329,39 @@ a[href*="/logout"]:hover {
     filter: brightness(1.08);
 }
 
+.divider{
+  height: 2px;
+  background: #111;
+  margin-top: 8px;
+}
+
+.chart-wrap{
+  position: relative;
+  height: 180px;   /* ESSENCIAL pro gráfico aparecer */
+  width: 100%;
+  margin-top: 12px;
+}
+
+.hfpi-cards{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.hfpi-box{
+  background: #f3f6f8;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hfpi-box strong{
+  font-size: 22px;
+  font-weight: 800;
+  color: #0a8a3a;
+}
+
+
