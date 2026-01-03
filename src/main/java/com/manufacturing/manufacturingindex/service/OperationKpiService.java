@@ -1,6 +1,9 @@
 package com.manufacturing.manufacturingindex.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.manufacturing.manufacturingindex.dto.OperationKpiDTO;
 import com.manufacturing.manufacturingindex.model.Factory;
@@ -21,8 +24,9 @@ public class OperationKpiService {
     }
 
     // =========================
-    // SAVE (já funcionava)
+    // SAVE (mantido) + monthRef obrigatório
     // =========================
+    @Transactional
     public void save(Long factoryId, OperationKpiDTO dto) {
 
         Factory factory = factoryRepo.findById(factoryId).orElseThrow();
@@ -49,10 +53,7 @@ public class OperationKpiService {
         r.setQuarter(dto.getQuarter());
 
         // ✅ monthRef obrigatório no seu model -> garante valor
-        String monthRef = dto.getMonthRef();
-        if (monthRef == null || monthRef.isBlank()) {
-            monthRef = "ALL";
-        }
+        String monthRef = normalizeMonthRef(dto.getMonthRef());
         r.setMonthRef(monthRef);
 
         r.setKpiValue(value.doubleValue());
@@ -70,7 +71,7 @@ public class OperationKpiService {
     }
 
     // =========================
-    // ✅ READ – ONE PAGER (Month opcional)
+    // READ – ONE PAGER (Month opcional)
     // =========================
     public OperationKpiDTO getOperationKpi(Long factoryId,
                                            String fy,
@@ -100,5 +101,49 @@ public class OperationKpiService {
         );
 
         return dto;
+    }
+
+    // ============================================================
+    // ✅ NOVO: suporte para tabela e EDIT/DELETE do Operation KPI
+    // (não mexe em OnePager, só adiciona funções usadas no CRUD)
+    // ============================================================
+
+    /**
+     * Tabela "KPIs already registered for this Factory"
+     * (uma linha por FY+Quarter+MonthRef)
+     */
+    public List<Object[]> listOperationTable(Long factoryId) {
+        return repo.listOperationTable(factoryId);
+    }
+
+    /**
+     * Carrega o conjunto OPERATION do mês (para editar)
+     */
+    public List<KpiRecord> findOperationSet(Long factoryId,
+                                            String fy,
+                                            String quarter,
+                                            String monthRef) {
+        return repo.findOperationSet(factoryId, fy, quarter, normalizeMonthRef(monthRef));
+    }
+
+    /**
+     * Deleta o conjunto OPERATION inteiro (FY+Quarter+MonthRef)
+     */
+    @Transactional
+    public int deleteOperationSet(Long factoryId,
+                                  String fy,
+                                  String quarter,
+                                  String monthRef) {
+        return repo.deleteOperationSet(factoryId, fy, quarter, normalizeMonthRef(monthRef));
+    }
+
+    // ============================================================
+    // AUX
+    // ============================================================
+    private String normalizeMonthRef(String monthRef) {
+        if (monthRef == null) return "ALL";
+        String m = monthRef.trim();
+        if (m.isEmpty()) return "ALL";
+        return m.toUpperCase(); // teu print mostra JUN/JUL/AUG
     }
 }

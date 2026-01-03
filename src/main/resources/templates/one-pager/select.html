@@ -1,40 +1,83 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Select Factory</title>
-    <link rel="stylesheet" th:href="@{/css/layout.css}">
-    <link rel="stylesheet" th:href="@{/css/one-pager.css}">
-</head>
+<head th:replace="fragments/head :: head('One Pager')"></head>
+
+<!-- CSS padrão do projeto -->
+<link rel="stylesheet" th:href="@{/css/layout.css}">
+<link rel="stylesheet" th:href="@{/css/forms.css}">
+
+<!-- CSS isolado só dessa tela -->
+<link rel="stylesheet" th:href="@{/css/one-pager-select.css}">
 
 <body>
-
 <div class="container">
+
+    <!-- SIDEBAR -->
     <div th:replace="fragments/sidebar :: sidebar"></div>
 
-    <div class="content">
-        <h2>📄 One Pager</h2>
-        <p>Select a factory to manage One Pager data</p>
+    <!-- CONTENT -->
+    <div class="content one-pager-select">
 
-        <form th:action="@{/one-pager/manage}" method="get">
-            <label>Factory</label>
-            <select name="factoryId" required>
-                <option value="">-- Select Factory --</option>
-                <option th:each="f : ${factories}"
-                        th:value="${f.id}"
-                        th:text="${f.name}">
-                </option>
-            </select>
+        <div class="op-select-header">
+            <h2>📄 One Pager</h2>
+            <p class="subtitle">Select a factory to manage One Pager data</p>
+        </div>
 
-            <br><br>
-            <button type="submit" class="btn-primary">
-                Continue →
-            </button>
-        </form>
+        <div class="op-select-card">
 
-        <br>
-        <a th:href="@{/}" class="btn-secondary">⬅ Back to Dashboard</a>
+            <div class="op-select-row">
+                <div class="op-select-icon">🏭</div>
+
+                <div class="op-select-main">
+                    <label class="op-select-label" for="factoryId">Factory</label>
+
+                    <!-- IMPORTANT: action e name batem com o controller /one-pager/manage?factoryId= -->
+                    <form method="get" th:action="@{/one-pager/manage}" id="selectFactoryForm">
+                        <select id="factoryId" name="factoryId" class="op-select-input" required>
+                            <option value="">-- Select Factory --</option>
+                            <option th:each="f : ${factories}"
+                                    th:value="${f.id}"
+                                    th:text="${f.name}">
+                            </option>
+                        </select>
+
+                        <div class="op-select-actions">
+                            <button type="submit" class="btn-primary" id="btnContinue" disabled>
+                                Continue →
+                            </button>
+
+                            <a th:href="@{/}" class="btn-secondary">
+                                ← Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+
+                    <small class="op-select-help">
+                        Tip: choose a factory and click Continue (or just select and it will enable automatically).
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </div>
+
+<script>
+    (function () {
+        const select = document.getElementById('factoryId');
+        const btn = document.getElementById('btnContinue');
+
+        function refresh() {
+            btn.disabled = !(select && select.value);
+        }
+
+        if (select) {
+            select.addEventListener('change', refresh);
+            refresh();
+        }
+    })();
+</script>
 
 </body>
 </html>

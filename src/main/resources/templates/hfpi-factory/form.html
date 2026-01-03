@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Operation KPI</title>
+    <title>HFPI Factory</title>
     <link rel="stylesheet" th:href="@{/css/layout.css}">
 </head>
 
@@ -12,16 +12,19 @@
 
     <div class="content">
 
-        <h2>📊 Operation KPI</h2>
+        <h2>🏭 HFPI Factory</h2>
         <p>
             Factory:
             <strong th:text="${factory.name}"></strong>
         </p>
 
-        <form th:action="@{/kpi/operation/save/{id}(id=${factory.id})}"
-              th:object="${kpi}"
+        <form th:action="@{/hfpi-factory/save}"
+              th:object="${hfpiFactory}"
               method="post"
               class="form-box">
+
+            <!-- precisa para o save() recuperar a fábrica -->
+            <input type="hidden" th:field="*{factory.id}">
 
             <!-- PERIOD -->
             <label>Fiscal Year (FY)</label>
@@ -37,31 +40,37 @@
             </select>
 
             <label>Month</label>
-            <input type="text" th:field="*{month}" placeholder="Aug" required>
+            <!-- ✅ manter igual ao banco (Junho/Julho/Agosto...) -->
+            <select th:field="*{month}" required>
+                <option value="">-- Select --</option>
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Novembro">Novembro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
 
             <hr>
 
-            <!-- KPI VALUES -->
-            <label>Pairs Produced</label>
-            <input type="number" th:field="*{pairsProduced}" required>
+            <!-- HFPI VALUES -->
+            <label>HFPI Approved</label>
+            <input type="number" min="0" step="1" th:field="*{hfpiAprovados}" required>
 
-            <label>Working Days</label>
-            <input type="number" th:field="*{workingDays}" required>
-
-            <label>Workforce Nike</label>
-            <input type="number" th:field="*{workforceNike}" required>
-
-            <label>PPH</label>
-            <input type="number" step="0.01" th:field="*{pph}" required>
-
-            <label>DR (&lt; 0.15%)</label>
-            <input type="number" step="0.001" th:field="*{dr}" required>
+            <label>HFPI Realized</label>
+            <input type="number" min="0" step="1" th:field="*{hfpiRealizado}" required>
 
             <button type="submit" class="btn-primary">
-                💾 Save KPI
+                💾 Save HFPI
             </button>
 
-            <a th:href="@{/one-pager/manage?factoryId={id}(id=${factory.id})}"
+            <a th:href="@{/hfpi-factory/{factoryId}(factoryId=${factory.id})}"
                class="btn-secondary">
                 Cancel
             </a>

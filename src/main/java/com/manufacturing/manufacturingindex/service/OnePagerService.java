@@ -1,5 +1,6 @@
 package com.manufacturing.manufacturingindex.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class OnePagerService {
                                            String quarter,
                                            String monthRef) {
 
+        // monthRef pode vir "" (All Months)
         return operationKpiService.getOperationKpi(factoryId, fy, quarter, monthRef);
     }
 
@@ -78,19 +80,26 @@ public class OnePagerService {
     }
 
     /* =====================
-       DR – TOP TYPES
+       DR – TOP TYPES (✅ agora retorna DTO sempre)
        ===================== */
-    public List<DrTopTypeDTO> getDrTopTypes(Long factoryId,
-                                           String fy,
-                                           String quarter) {
+    public List<DrTopTypeDTO> getDrTopTypes(Long factoryId, String fy, String quarter) {
 
-        return defectRepo.findTopDefects(factoryId, fy, quarter)
-                .stream()
-                .map(row -> new DrTopTypeDTO(
-                        (String) row[0],
-                        ((Number) row[1]).longValue()
-                ))
-                .toList();
+        // cada linha = [name, total, rate]
+        List<Object[]> raw = defectRepo.getDrTopTypes(factoryId, fy, quarter);
+
+        List<DrTopTypeDTO> list = new ArrayList<>();
+
+        for (Object[] r : raw) {
+            if (r == null || r.length == 0) continue;
+
+            String name = (r[0] != null) ? r[0].toString() : "—";
+            long total = (r.length > 1 && r[1] != null) ? ((Number) r[1]).longValue() : 0L;
+            double rate = (r.length > 2 && r[2] != null) ? ((Number) r[2]).doubleValue() : 0.0;
+
+            list.add(new DrTopTypeDTO(name, total, rate));
+        }
+
+        return list;
     }
 
     /* =====================

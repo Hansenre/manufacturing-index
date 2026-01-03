@@ -29,14 +29,14 @@
 		    <a th:if="${firstFactoryId != null}"
 		       th:href="@{/kpis/{id}(id=${firstFactoryId})}"
 		       class="card">
-		        <h3>📊 KPIs</h3>
+		        <h3>📊 Data</h3>
 		        <p>Total: <strong th:text="${totalKpis}"></strong></p>
 		    </a>
 
 		    <a th:if="${firstFactoryId != null}"
 		       th:href="@{/performance/{id}(id=${firstFactoryId})}"
 		       class="card">
-		        <h3>📈 Performance</h3>
+		        <h3>📈 MI</h3>
 		        <p>Gold / Silver / Bronze</p>
 		    </a>
 

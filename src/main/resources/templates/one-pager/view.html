@@ -6,196 +6,277 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One Pager</title>
   <link rel="stylesheet" th:href="@{/css/one-pager-view.css}">
-</head>
 
+  <!-- Chart.js (VOC) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- ✅ DataLabels (valores em cima de cada mês) -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
 
 <body>
 
 <div class="container">
 
-    <!-- SIDEBAR -->
-    <div th:replace="fragments/sidebar :: sidebar"></div>
+  <!-- SIDEBAR -->
+  <div th:replace="fragments/sidebar :: sidebar"></div>
 
-    <!-- CONTENT -->
-    <div class="content">
+  <!-- CONTENT -->
+  <div class="content">
 
-        <div class="one-pager-pdf">
-            <div class="one-pager">
+    <div class="one-pager-pdf">
+      <div class="one-pager">
 
-                <!-- ================= HEADER ================= -->
-                <div class="one-pager-header">
+        <!-- ================= HEADER ================= -->
+        <div class="one-pager-header">
 
-                    <h2>
-                        PRODUCT SUPPLY CHAIN – FOOTWEAR<br>
-                        <small><strong th:text="${factory.name}">Factory</strong></small>
-                    </h2>
+          <h2>
+            PRODUCT SUPPLY CHAIN – FOOTWEAR<br>
+            <small><strong th:text="${factory.name}">Factory</strong></small>
+          </h2>
 
-                    <div class="one-pager-filter">
-                        <form method="get"
-                              th:action="@{/one-pager/{id}(id=${factory.id})}">
+          <div class="one-pager-filter">
+            <form method="get"
+                  th:action="@{/one-pager/{id}(id=${factory.id})}">
 
-                            <select name="fy">
-                                <option th:each="f : ${fyList}"
-                                        th:value="${f}"
-                                        th:text="${f}"
-                                        th:selected="${f == fy}">
-                                </option>
-                            </select>
+              <select name="fy">
+                <option th:each="f : ${fyList}"
+                        th:value="${f}"
+                        th:text="${f}"
+                        th:selected="${f == fy}">
+                </option>
+              </select>
 
-                            <select name="quarter">
-                                <option th:each="q : ${quarters}"
-                                        th:value="${q}"
-                                        th:text="${q}"
-                                        th:selected="${q == quarter}">
-                                </option>
-                            </select>
+              <select name="quarter">
+                <option th:each="q : ${quarters}"
+                        th:value="${q}"
+                        th:text="${q}"
+                        th:selected="${q == quarter}">
+                </option>
+              </select>
 
-                            <select name="month">
-                                <option value="">All Months</option>
-                                <option th:each="m : ${months}"
-                                        th:value="${m}"
-                                        th:text="${m}"
-                                        th:selected="${m == month}">
-                                </option>
-                            </select>
+              <select name="month">
+                <option value="" th:selected="${month == ''}">All Months</option>
+                <option th:each="m : ${months}"
+                        th:value="${m}"
+                        th:text="${m}"
+                        th:selected="${m == month}">
+                </option>
+              </select>
 
-                            <button type="submit">Apply</button>
-                        </form>
-                    </div>
+              <button type="submit">Apply</button>
+            </form>
+          </div>
 
-                    <a th:href="@{/one-pager}" class="btn-secondary">
-                        🔄 Change Factory
-                    </a>
-                </div>
-
-                <!-- ================= OPERATION + QUALITY ================= -->
-                <div class="kpi-top-grid">
-
-                    <!-- OPERATION KPI -->
-                    <div class="op-section">
-                        <h3>OPERATION KPI</h3>
-
-                        <div class="kpi-table">
-                            <div>
-                                <span>Pairs Produced</span>
-                                <strong th:text="${#numbers.formatDecimal(operationKpi.pairsProduced,1,2)}">0.00</strong>
-                            </div>
-
-                            <div>
-                                <span>Workforce Nike</span>
-                                <strong th:text="${#numbers.formatDecimal(operationKpi.workforceNike,1,2)}">0.00</strong>
-                            </div>
-
-                            <div>
-                                <span>PPH</span>
-                                <strong th:text="${#numbers.formatDecimal(operationKpi.pph,1,2)}">0.00</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QUALITY KPI -->
-                    <div class="op-section">
-                        <h3>KPI QUALITY METRICS</h3>
-
-                        <div class="quality-grid">
-                            <div class="quality-card">
-                                <h4>MPPA</h4>
-                                <small>Big Nike Low</small>
-                                <strong>Metric</strong>
-                            </div>
-
-                            <div class="quality-card">
-                                <h4>MQAAs &gt; 97.5%</h4>
-                                <small>Assembly</small>
-                                <strong>Metric</strong>
-                            </div>
-
-                            <div class="quality-card">
-                                <h4>BTP 2.0 – 99%</h4>
-                                <small>Daily Bonding Test</small>
-                                <strong>Metric</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ================= HFPI / VOC / WASTE / DR ================= -->
-                <div class="one-pager-grid">
-
-                    <div class="op-section">
-                        <h3>HFPI GROUP &gt; 95%</h3>
-
-                        <div class="hfpi-box">
-                            <div>
-                                <span>HFPI Geral</span>
-                                <strong>0.0%</strong>
-                            </div>
-                            <div>
-                                <span>HFPI Fábrica</span>
-                                <strong>0.0%</strong>
-                            </div>
-                            <div>
-                                <span>HFPI Online</span>
-                                <strong>0.0%</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="op-section">
-                        <h3>VOC – LAST SIX MONTHS</h3>
-                    </div>
-
-                    <div class="op-section">
-                        <h3>WASTE – LAST SIX MONTHS</h3>
-                    </div>
-
-                    <div class="op-section">
-                        <h3>DR – TOP TYPES</h3>
-
-                        <ul class="dr-list">
-                            <li th:each="item : ${drTopTypes}">
-                                <span th:text="${item.name}">Defect</span>
-                                <strong th:text="${#numbers.formatDecimal(item.rate,1,2)} + '%'">0.00%</strong>
-                            </li>
-                        </ul>
-                    </div>
-
-                </div>
-
-                <!-- ================= EXECUTIVE SUMMARY ================= -->
-				<div class="op-section">
-				    <h3>EXECUTIVE SUMMARY</h3>
-
-				    <div class="summary-box" th:if="${summary != null}">
-				        <div>
-				            <h4>Highlight</h4>
-				            <p th:text="${summary.highlight}">—</p>
-				        </div>
-
-				        <div>
-				            <h4>Key Action</h4>
-				            <p th:text="${summary.keyAction}">—</p>
-				        </div>
-
-				        <div>
-				            <h4>Help Needed</h4>
-				            <p th:text="${summary.helpNeeded}">—</p>
-				        </div>
-				    </div>
-
-				    <div class="summary-box" th:unless="${summary != null}">
-				        <div><h4>Highlight</h4><p>—</p></div>
-				        <div><h4>Key Action</h4><p>—</p></div>
-				        <div><h4>Help Needed</h4><p>—</p></div>
-				    </div>
-				</div>
-
-
-            </div>
+          <a th:href="@{/one-pager}" class="btn-secondary">
+            🔄 Change Factory
+          </a>
         </div>
 
+        <!-- ================= OPERATION + QUALITY ================= -->
+        <div class="kpi-top-grid">
+
+          <!-- OPERATION KPI -->
+          <div class="op-section">
+            <h3>OPERATION KPI</h3>
+
+            <div class="kpi-table">
+              <div>
+                <span>Pairs Produced</span>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.pairsProduced != null ? operationKpi.pairsProduced : 0,1,2)}">0.00</strong>
+              </div>
+
+              <div>
+                <span>Workforce Nike</span>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.workforceNike != null ? operationKpi.workforceNike : 0,1,2)}">0.00</strong>
+              </div>
+
+              <div>
+                <span>PPH</span>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.pph != null ? operationKpi.pph : 0,1,2)}">0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- QUALITY KPI -->
+          <div class="op-section">
+            <h3>KPI QUALITY METRICS</h3>
+
+            <div class="quality-grid">
+              <div class="quality-card">
+                <h4>MPPA</h4>
+                <small>Big Nike Low</small>
+                <strong>Metric</strong>
+              </div>
+
+              <div class="quality-card">
+                <h4>MQAAs &gt; 97.5%</h4>
+                <small>Assembly</small>
+                <strong>Metric</strong>
+              </div>
+
+              <div class="quality-card">
+                <h4>BTP 2.0 – 99%</h4>
+                <small>Daily Bonding Test</small>
+                <strong>Metric</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= HFPI / VOC / WASTE / DR ================= -->
+        <div class="one-pager-grid">
+
+          <!-- HFPI -->
+          <div class="op-section">
+            <h3>HFPI GROUP &gt; 95%</h3>
+
+            <div class="hfpi-box">
+              <div>
+                <span>HFPI Geral</span>
+                <strong th:text="${hfpiGeneral != null ? hfpiGeneral : '0.0%'}">0.0%</strong>
+              </div>
+              <div>
+                <span>HFPI Fábrica</span>
+                <strong th:text="${hfpiFactory != null ? hfpiFactory : '0.0%'}">0.0%</strong>
+              </div>
+              <div>
+                <span>HFPI Online</span>
+                <strong th:text="${hfpiOnline != null ? hfpiOnline : '0.0%'}">0.0%</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- VOC -->
+          <div class="op-section">
+            <h3>VOC – LAST SIX MONTHS</h3>
+
+            <div class="chart-wrap">
+              <canvas id="vocChart"></canvas>
+            </div>
+
+            <p class="chart-empty" th:if="${vocEmpty}">
+              No VOC data for the last 6 months.
+            </p>
+          </div>
+
+          <!-- WASTE (depois ligamos) -->
+          <div class="op-section">
+            <h3>WASTE – LAST SIX MONTHS</h3>
+          </div>
+
+          <!-- DR – Defect Returns (mantém o bloco, sem dados por enquanto) -->
+          <div class="op-section">
+            <h3>DR – Defect Returns</h3>
+            <div class="divider"></div>
+
+            <div class="dr-content">
+              <!-- vazio por enquanto: aqui depois entra Defect Returns -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= EXECUTIVE SUMMARY ================= -->
+        <div class="op-section">
+          <h3>EXECUTIVE SUMMARY</h3>
+
+          <div class="summary-box" th:if="${summary != null}">
+            <div>
+              <h4>Highlight</h4>
+              <p th:text="${summary.highlight}">—</p>
+            </div>
+
+            <div>
+              <h4>Key Action</h4>
+              <p th:text="${summary.keyAction}">—</p>
+            </div>
+
+            <div>
+              <h4>Help Needed</h4>
+              <p th:text="${summary.helpNeeded}">—</p>
+            </div>
+          </div>
+
+          <div class="summary-box" th:unless="${summary != null}">
+            <div><h4>Highlight</h4><p>—</p></div>
+            <div><h4>Key Action</h4><p>—</p></div>
+            <div><h4>Help Needed</h4><p>—</p></div>
+          </div>
+        </div>
+
+      </div>
     </div>
+
+  </div>
 </div>
+
+<!-- =================== VOC CHART SCRIPT =================== -->
+<!-- =================== VOC CHART SCRIPT =================== -->
+<script th:inline="javascript">
+  const vocLabels = JSON.parse(/*[[${vocLabelsJson ?: '[]'}]]*/ '[]');
+  const vocValues = JSON.parse(/*[[${vocValuesJson ?: '[]'}]]*/ '[]');
+
+  const canvas = document.getElementById('vocChart');
+
+  if (canvas && Array.isArray(vocLabels) && vocLabels.length > 0) {
+    const ctx = canvas.getContext('2d');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: vocLabels,
+        datasets: [{
+          label: 'VOC',
+          data: vocValues,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        // ✅ espaço extra no topo pra não cortar os valores
+        layout: {
+          padding: { top: 18, right: 8, bottom: 8, left: 8 }
+        },
+
+        plugins: {
+          legend: { display: false },
+
+          // ✅ valores visíveis (não corta)
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            offset: 6,
+            clip: false,   // <- não corta no limite do chartArea
+            clamp: true,   // <- mantém dentro do canvas
+            formatter: (value) => {
+              const n = Number(value);
+              return isNaN(n) ? value : n.toFixed(1);
+            }
+          },
+
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `VOC: ${Number(ctx.parsed.y).toFixed(1)}`
+            }
+          }
+        },
+
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  }
+</script>
+
 
 </body>
 </html>
