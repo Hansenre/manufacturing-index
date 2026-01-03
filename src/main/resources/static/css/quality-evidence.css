@@ -1,0 +1,111 @@
+/* Página Upload Evidence */
+.content {
+  max-width: 1200px;
+}
+
+/* Grid dos 3 cards */
+.qe-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Card de cada métrica */
+.qe-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.qe-card h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* Input file */
+.qe-card input[type="file"] {
+  width: 100%;
+  font-size: 13px;
+}
+
+/* Preview */
+.qe-preview {
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  height: 220px;            /* preview maior */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.qe-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;      /* mostra 100% dentro */
+  object-position: center;
+  display: block;
+}
+
+/* Vazio */
+.qe-empty {
+  margin-top: 10px;
+  opacity: .75;
+  font-weight: 700;
+}
+
+/* Linha de filtros (fy/quarter/month) */
+.qe-filter {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 12px 0 18px;
+}
+
+.qe-filter select,
+.qe-filter button {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+/* Ações */
+.qe-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Botão delete */
+.btn-danger {
+  border: 1px solid #ef4444;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 900;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  filter: brightness(1.05);
+}
+
+/* Responsivo */
+@media (max-width: 1000px) {
+  .qe-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .qe-preview {
+    height: 260px;
+  }
+}
