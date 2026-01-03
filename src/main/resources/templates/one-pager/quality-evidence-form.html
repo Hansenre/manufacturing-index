@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quality Evidence Upload</title>
+  <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
+<body>
+<div class="container">
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <div class="content">
+
+    <h2>📎 Upload Evidence – KPI Quality Metrics</h2>
+
+    <p>
+      Factory: <strong th:text="${factory.name}"></strong> |
+      <strong th:text="${fy}"></strong> /
+      <strong th:text="${quarter}"></strong> /
+      Month:
+      <strong th:text="${month == null || month == '' ? 'All Months' : month}">All Months</strong>
+    </p>
+
+    <!-- Trocar mês aqui -->
+    <form method="get"
+          th:action="@{/one-pager/quality/{id}(id=${factory.id})}"
+          style="display:flex; gap:10px; align-items:center; margin: 12px 0 18px; flex-wrap:wrap;">
+
+      <input type="hidden" name="fy" th:value="${fy}">
+      <input type="hidden" name="quarter" th:value="${quarter}">
+
+      <label style="font-weight:800;">Month</label>
+      <select name="month" style="padding:6px 10px; border-radius:8px;">
+        <option value="" th:selected="${month == null || month == ''}">Select Month</option>
+        <option th:each="m : ${months}"
+                th:value="${m}"
+                th:text="${m}"
+                th:selected="${m == month}">
+        </option>
+      </select>
+
+      <button type="submit" class="btn-secondary">Apply</button>
+    </form>
+
+    <!-- ✅ UPLOAD (um único form) -->
+    <form id="uploadForm"
+          th:action="@{/one-pager/quality/{id}/upload(id=${factory.id})}"
+          method="post"
+          enctype="multipart/form-data">
+
+      <input type="hidden" name="fy" th:value="${fy}">
+      <input type="hidden" name="quarter" th:value="${quarter}">
+      <input type="hidden" name="month" th:value="${month}">
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
+
+        <!-- MPPA -->
+        <div>
+          <h3>MPPA</h3>
+          <input type="file" name="mppaFile" accept="image/*">
+
+          <div th:if="${mppaEv != null}" style="margin-top:10px;">
+            <img th:src="@{/one-pager/quality/img/{eid}(eid=${mppaEv.id})}"
+                 style="width:100%; border:1px solid #ddd; border-radius:8px;">
+            <button type="submit"
+                    form="delete-mppa"
+                    class="btn-secondary"
+                    style="margin-top:10px; border-color:#ef4444; color:#b91c1c;"
+                    onclick="return confirm('Delete MPPA evidence?');">
+              🗑 Delete
+            </button>
+          </div>
+
+          <p th:if="${mppaEv == null}" style="margin-top:10px; opacity:.7; font-weight:700;">
+            <span th:text="${(month == null || month == '') ? 'Select Month to upload' : 'No evidence'}">Select Month to upload</span>
+          </p>
+        </div>
+
+        <!-- MQAA -->
+        <div>
+          <h3>MQAAs &gt; 97.5%</h3>
+          <input type="file" name="mqaaFile" accept="image/*">
+
+          <div th:if="${mqaaEv != null}" style="margin-top:10px;">
+            <img th:src="@{/one-pager/quality/img/{eid}(eid=${mqaaEv.id})}"
+                 style="width:100%; border:1px solid #ddd; border-radius:8px;">
+            <button type="submit"
+                    form="delete-mqaa"
+                    class="btn-secondary"
+                    style="margin-top:10px; border-color:#ef4444; color:#b91c1c;"
+                    onclick="return confirm('Delete MQAA evidence?');">
+              🗑 Delete
+            </button>
+          </div>
+
+          <p th:if="${mqaaEv == null}" style="margin-top:10px; opacity:.7; font-weight:700;">
+            <span th:text="${(month == null || month == '') ? 'Select Month to upload' : 'No evidence'}">Select Month to upload</span>
+          </p>
+        </div>
+
+        <!-- BTP -->
+        <div>
+          <h3>BTP 2.0 – 99%</h3>
+          <input type="file" name="btpFile" accept="image/*">
+
+          <div th:if="${btpEv != null}" style="margin-top:10px;">
+            <img th:src="@{/one-pager/quality/img/{eid}(eid=${btpEv.id})}"
+                 style="width:100%; border:1px solid #ddd; border-radius:8px;">
+            <button type="submit"
+                    form="delete-btp"
+                    class="btn-secondary"
+                    style="margin-top:10px; border-color:#ef4444; color:#b91c1c;"
+                    onclick="return confirm('Delete BTP evidence?');">
+              🗑 Delete
+            </button>
+          </div>
+
+          <p th:if="${btpEv == null}" style="margin-top:10px; opacity:.7; font-weight:700;">
+            <span th:text="${(month == null || month == '') ? 'Select Month to upload' : 'No evidence'}">Select Month to upload</span>
+          </p>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn-primary" type="submit"
+                th:disabled="${month == null || month == ''}">
+          💾 Save Evidence
+        </button>
+
+        <a class="btn-secondary"
+           th:href="@{/one-pager/{id}(id=${factory.id}, fy=${fy}, quarter=${quarter}, month=${month})}">
+          ⬅ Back to One Pager
+        </a>
+      </div>
+
+      <p th:if="${month == null || month == ''}"
+         style="margin-top:10px; opacity:.75; font-weight:700;">
+        ⚠️ Select a month to enable upload.
+      </p>
+
+    </form>
+
+    <!-- ✅ FORMS DE DELETE (fora do uploadForm, sem aninhar) -->
+    <form id="delete-mppa" method="post"
+          th:if="${mppaEv != null}"
+          th:action="@{/one-pager/quality/{fid}/delete/{eid}(fid=${factory.id}, eid=${mppaEv.id})}">
+      <input type="hidden" name="fy" th:value="${fy}">
+      <input type="hidden" name="quarter" th:value="${quarter}">
+      <input type="hidden" name="month" th:value="${month}">
+    </form>
+
+    <form id="delete-mqaa" method="post"
+          th:if="${mqaaEv != null}"
+          th:action="@{/one-pager/quality/{fid}/delete/{eid}(fid=${factory.id}, eid=${mqaaEv.id})}">
+      <input type="hidden" name="fy" th:value="${fy}">
+      <input type="hidden" name="quarter" th:value="${quarter}">
+      <input type="hidden" name="month" th:value="${month}">
+    </form>
+
+    <form id="delete-btp" method="post"
+          th:if="${btpEv != null}"
+          th:action="@{/one-pager/quality/{fid}/delete/{eid}(fid=${factory.id}, eid=${btpEv.id})}">
+      <input type="hidden" name="fy" th:value="${fy}">
+      <input type="hidden" name="quarter" th:value="${quarter}">
+      <input type="hidden" name="month" th:value="${month}">
+    </form>
+
+  </div>
+</div>
+</body>
+</html>

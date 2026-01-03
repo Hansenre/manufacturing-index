@@ -12,6 +12,55 @@
 
   <!-- ✅ DataLabels (valores em cima de cada mês) -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <!-- ✅ Ajustes locais para QUALIDADE (texto menor + imagem maior + contain) -->
+  <style>
+    .quality-card h4{
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .quality-card{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+
+    .quality-evidence{
+      flex: 1;
+      width: 100%;
+      height: 170px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      overflow: hidden;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 6px;
+      margin-top: 6px;
+    }
+
+    .quality-evidence img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display:block;
+    }
+
+    .quality-evidence.empty{
+      background: #f7f7f7;
+    }
+    .quality-evidence.empty span{
+      font-size: 12px;
+      opacity: .75;
+      font-weight: 700;
+    }
+  </style>
 </head>
 
 <body>
@@ -56,7 +105,7 @@
               </select>
 
               <select name="month">
-                <option value="" th:selected="${month == ''}">All Months</option>
+                <option value="" th:selected="${month == null or month == ''}">All Months</option>
                 <option th:each="m : ${months}"
                         th:value="${m}"
                         th:text="${m}"
@@ -83,43 +132,73 @@
             <div class="kpi-table">
               <div>
                 <span>Pairs Produced</span>
-                <strong th:text="${#numbers.formatDecimal(operationKpi.pairsProduced != null ? operationKpi.pairsProduced : 0,1,2)}">0.00</strong>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.pairsProduced != null ? operationKpi.pairsProduced : 0, 1, 0)}">0</strong>
               </div>
 
               <div>
                 <span>Workforce Nike</span>
-                <strong th:text="${#numbers.formatDecimal(operationKpi.workforceNike != null ? operationKpi.workforceNike : 0,1,2)}">0.00</strong>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.workforceNike != null ? operationKpi.workforceNike : 0, 1, 0)}">0</strong>
               </div>
 
               <div>
                 <span>PPH</span>
-                <strong th:text="${#numbers.formatDecimal(operationKpi.pph != null ? operationKpi.pph : 0,1,2)}">0.00</strong>
+                <strong th:text="${#numbers.formatDecimal(operationKpi.pph != null ? operationKpi.pph : 0, 1, 2)}">0.00</strong>
               </div>
             </div>
           </div>
 
           <!-- QUALITY KPI -->
           <div class="op-section">
-            <h3>KPI QUALITY METRICS</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <h3 style="margin:0;">KPI QUALITY METRICS</h3>
+
+              <!-- ✅ SEMPRE ATIVO:
+                   - passa month se existir
+                   - se month estiver vazio/null, vai como parâmetro vazio (controller trata como opcional) -->
+              <a class="btn-secondary"
+                 th:href="@{/one-pager/quality/{id}(id=${factory.id}, fy=${fy}, quarter=${quarter}, month=${month})}">
+                📎 Upload Evidence
+              </a>
+            </div>
 
             <div class="quality-grid">
+
+              <!-- MPPA -->
               <div class="quality-card">
                 <h4>MPPA</h4>
-                <small>Big Nike Low</small>
-                <strong>Metric</strong>
+
+                <div class="quality-evidence" th:if="${mppaEv != null}">
+                  <img th:src="@{/one-pager/quality/img/{eid}(eid=${mppaEv.id})}" alt="MPPA Evidence">
+                </div>
+                <div class="quality-evidence empty" th:if="${mppaEv == null}">
+                  <span th:text="${(month == null or month == '') ? 'Select Month' : 'No evidence'}">No evidence</span>
+                </div>
               </div>
 
+              <!-- MQAA -->
               <div class="quality-card">
                 <h4>MQAAs &gt; 97.5%</h4>
-                <small>Assembly</small>
-                <strong>Metric</strong>
+
+                <div class="quality-evidence" th:if="${mqaaEv != null}">
+                  <img th:src="@{/one-pager/quality/img/{eid}(eid=${mqaaEv.id})}" alt="MQAA Evidence">
+                </div>
+                <div class="quality-evidence empty" th:if="${mqaaEv == null}">
+                  <span th:text="${(month == null or month == '') ? 'Select Month' : 'No evidence'}">No evidence</span>
+                </div>
               </div>
 
+              <!-- BTP -->
               <div class="quality-card">
                 <h4>BTP 2.0 – 99%</h4>
-                <small>Daily Bonding Test</small>
-                <strong>Metric</strong>
+
+                <div class="quality-evidence" th:if="${btpEv != null}">
+                  <img th:src="@{/one-pager/quality/img/{eid}(eid=${btpEv.id})}" alt="BTP Evidence">
+                </div>
+                <div class="quality-evidence empty" th:if="${btpEv == null}">
+                  <span th:text="${(month == null or month == '') ? 'Select Month' : 'No evidence'}">No evidence</span>
+                </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -160,18 +239,18 @@
             </p>
           </div>
 
-          <!-- WASTE (depois ligamos) -->
+          <!-- WASTE -->
           <div class="op-section">
             <h3>WASTE – LAST SIX MONTHS</h3>
           </div>
 
-          <!-- DR – Defect Returns (mantém o bloco, sem dados por enquanto) -->
+          <!-- DR -->
           <div class="op-section">
             <h3>DR – Defect Returns</h3>
             <div class="divider"></div>
 
             <div class="dr-content">
-              <!-- vazio por enquanto: aqui depois entra Defect Returns -->
+              <!-- vazio por enquanto -->
             </div>
           </div>
 
@@ -212,7 +291,6 @@
 </div>
 
 <!-- =================== VOC CHART SCRIPT =================== -->
-<!-- =================== VOC CHART SCRIPT =================== -->
 <script th:inline="javascript">
   const vocLabels = JSON.parse(/*[[${vocLabelsJson ?: '[]'}]]*/ '[]');
   const vocValues = JSON.parse(/*[[${vocValuesJson ?: '[]'}]]*/ '[]');
@@ -237,22 +315,17 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-
-        // ✅ espaço extra no topo pra não cortar os valores
-        layout: {
-          padding: { top: 18, right: 8, bottom: 8, left: 8 }
-        },
+        layout: { padding: { top: 18, right: 8, bottom: 8, left: 8 } },
 
         plugins: {
           legend: { display: false },
 
-          // ✅ valores visíveis (não corta)
           datalabels: {
             anchor: 'end',
             align: 'top',
             offset: 6,
-            clip: false,   // <- não corta no limite do chartArea
-            clamp: true,   // <- mantém dentro do canvas
+            clip: false,
+            clamp: true,
             formatter: (value) => {
               const n = Number(value);
               return isNaN(n) ? value : n.toFixed(1);
@@ -267,16 +340,13 @@
         },
 
         scales: {
-          y: {
-            beginAtZero: true
-          }
+          y: { beginAtZero: true }
         }
       },
       plugins: [ChartDataLabels]
     });
   }
 </script>
-
 
 </body>
 </html>

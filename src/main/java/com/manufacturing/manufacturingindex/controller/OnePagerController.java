@@ -10,10 +10,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.manufacturing.manufacturingindex.model.KpiQualityEvidence.MetricKey;
 import com.manufacturing.manufacturingindex.repository.FactoryRepository;
 import com.manufacturing.manufacturingindex.repository.HfpiEventRepository;
 import com.manufacturing.manufacturingindex.repository.HfpiFactoryRepository;
 import com.manufacturing.manufacturingindex.repository.KpiRecordRepository;
+import com.manufacturing.manufacturingindex.service.KpiQualityEvidenceService;
 import com.manufacturing.manufacturingindex.service.OnePagerService;
 
 @Controller
@@ -26,18 +28,23 @@ public class OnePagerController {
     private final HfpiEventRepository hfpiEventRepo;
     private final OnePagerService service;
 
+    // ✅ Evidence
+    private final KpiQualityEvidenceService qualityEvidenceService;
+
     private final ObjectMapper om = new ObjectMapper();
 
     public OnePagerController(FactoryRepository factoryRepo,
                               KpiRecordRepository kpiRepo,
                               HfpiFactoryRepository hfpiFactoryRepo,
                               HfpiEventRepository hfpiEventRepo,
-                              OnePagerService service) {
+                              OnePagerService service,
+                              KpiQualityEvidenceService qualityEvidenceService) {
         this.factoryRepo = factoryRepo;
         this.kpiRepo = kpiRepo;
         this.hfpiFactoryRepo = hfpiFactoryRepo;
         this.hfpiEventRepo = hfpiEventRepo;
         this.service = service;
+        this.qualityEvidenceService = qualityEvidenceService;
     }
 
     @GetMapping
@@ -51,9 +58,30 @@ public class OnePagerController {
     }
 
     @GetMapping("/manage")
-    public String manageFactory(@RequestParam Long factoryId, Model model) {
+    public String manageFactory(@RequestParam Long factoryId,
+                                @RequestParam(required = false) String fy,
+                                @RequestParam(required = false) String quarter,
+                                @RequestParam(required = false) String month,
+                                Model model) {
+
         var factory = factoryRepo.findById(factoryId).orElseThrow();
+
+        if (fy == null || fy.isBlank()) fy = "FY26";
+        if (quarter == null || quarter.isBlank()) quarter = "Q1";
+
+        String monthRef = normalizeMonthRef(month);
+        if (monthRef.isBlank()) monthRef = "JAN"; // default para o manage
+
         model.addAttribute("factory", factory);
+
+        model.addAttribute("fy", fy);
+        model.addAttribute("quarter", quarter);
+        model.addAttribute("month", monthRef);
+
+        model.addAttribute("fyList", List.of("FY24", "FY25", "FY26"));
+        model.addAttribute("quarters", List.of("Q1", "Q2", "Q3", "Q4"));
+        model.addAttribute("months", List.of("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"));
+
         return "one-pager/manage";
     }
 
@@ -70,14 +98,19 @@ public class OnePagerController {
         if (fy == null || fy.isBlank()) fy = "FY26";
         if (quarter == null || quarter.isBlank()) quarter = "Q1";
 
-        // month: "" = All Months
-        String monthRef = (month == null) ? "" : month.trim().toUpperCase();
-        if (monthRef.equals("ALL")) monthRef = "";
+        // =========================
+        // ✅ MONTH (UI)
+        // - request month vem "" quando All Months
+        // - no Model: month = null (All)
+        // - para consultas antigas: monthRef = "" (All) ou "JAN"/...
+        // =========================
+        String monthRef = normalizeMonthRef(month);            // "" ou "JAN"
+        String monthUi  = monthRef.isBlank() ? null : monthRef; // null no model quando All
 
         model.addAttribute("factory", factory);
         model.addAttribute("fy", fy);
         model.addAttribute("quarter", quarter);
-        model.addAttribute("month", monthRef);
+        model.addAttribute("month", monthUi);
 
         // =========================
         // Mantém o que já funciona
@@ -89,33 +122,41 @@ public class OnePagerController {
         model.addAttribute("drTopTypes", service.getDrTopTypes(factoryId, fy, quarter));
 
         // =========================
-        // ✅ HFPI (3 cards): Online / Factory / General (60/40)
+        // ✅ EVIDENCE (MPPA/MQAA/BTP)
+        // Só busca se month estiver selecionado
         // =========================
+        if (!monthRef.isBlank()) {
+            Integer monthNumber = monthRefToNumber(monthRef); // 1..12
 
-        // --- ONLINE (%): vem do HFPI EVENTS
-        Object[] onlineRaw = hfpiEventRepo.getHfpiOnlinePercent(factoryId, fy, quarter);
-        double onlinePercent = extractPercentFromQueryResult(onlineRaw); // 0-100
-
-        // --- FACTORY (%): vem do HFPI_FACTORY
-        double factoryPercent = 0.0;
-
-        if (monthRef.isBlank()) {
-            Object[] factoryRaw = hfpiFactoryRepo.getHfpiFactoryPercent(factoryId, fy, quarter);
-            factoryPercent = extractPercentFromQueryResult(factoryRaw); // 0-100
+            model.addAttribute("mppaEv",
+                    qualityEvidenceService.findOne(factoryId, fy, quarter, monthNumber, MetricKey.MPPA).orElse(null));
+            model.addAttribute("mqaaEv",
+                    qualityEvidenceService.findOne(factoryId, fy, quarter, monthNumber, MetricKey.MQAA).orElse(null));
+            model.addAttribute("btpEv",
+                    qualityEvidenceService.findOne(factoryId, fy, quarter, monthNumber, MetricKey.BTP).orElse(null));
         } else {
-            String monthDb = normalizeHfpiMonthForDb(monthRef);
-
-            var opt = hfpiFactoryRepo.findTopByFactoryIdAndFyAndQuarterAndMonthOrderByIdDesc(
-                    factoryId, fy, quarter, monthDb
-            );
-
-            if (opt.isPresent()) {
-                var h = opt.get();
-                double aprov = (h.getHfpiAprovados() == null) ? 0.0 : h.getHfpiAprovados();
-                double real  = (h.getHfpiRealizado() == null) ? 0.0 : h.getHfpiRealizado();
-                factoryPercent = (real <= 0.0) ? 0.0 : (aprov * 100.0 / real);
-            }
+            model.addAttribute("mppaEv", null);
+            model.addAttribute("mqaaEv", null);
+            model.addAttribute("btpEv", null);
         }
+
+        // =========================
+        // ✅ HFPI (3 cards) - regra FY por mês:
+        // JUN/JUL/AUG=Q1 | SEP/OCT/NOV=Q2 | DEC/JAN/FEB=Q3 | MAR/APR/MAY=Q4
+        //
+        // IMPORTANTÍSSIMO:
+        // - HFPI Online e HFPI Fábrica SEMPRE "All Months" do quarter calculado
+        // - Mesmo quando um mês está selecionado, o HFPI NÃO usa mês (fica igual ao Online)
+        // =========================
+        String hfpiQuarter = quarterForHfpiByMonth(monthRef, quarter);
+
+        // --- ONLINE (%): HFPI EVENTS (sempre por quarter)
+        Object[] onlineRaw = hfpiEventRepo.getHfpiOnlinePercent(factoryId, fy, hfpiQuarter);
+        double onlinePercent = extractPercentFromQueryResult(onlineRaw);
+
+        // --- FACTORY (%): HFPI_FACTORY (sempre por quarter)
+        Object[] factoryRaw = hfpiFactoryRepo.getHfpiFactoryPercent(factoryId, fy, hfpiQuarter);
+        double factoryPercent = extractPercentFromQueryResult(factoryRaw);
 
         // --- GENERAL (%): 60% online + 40% factory
         double generalPercent = (onlinePercent * 0.6) + (factoryPercent * 0.4);
@@ -125,9 +166,7 @@ public class OnePagerController {
         model.addAttribute("hfpiGeneral", formatPercentNumber(generalPercent));
 
         // =========================
-        // ✅ VOC – LAST SIX MONTHS (VOC_RECORD)
-        // - tenta FY+Quarter
-        // - se vazio: fallback por FY (funciona nos 4 quarters)
+        // ✅ VOC – LAST SIX MONTHS
         // =========================
         List<Object[]> last6Voc = kpiRepo.findLast6VocFromVocRecord(factoryId, fy, quarter);
         if (last6Voc == null || last6Voc.isEmpty()) {
@@ -147,7 +186,6 @@ public class OnePagerController {
             }
         }
 
-        // deixa do mais antigo -> mais novo
         Collections.reverse(vocLabels);
         Collections.reverse(vocValues);
 
@@ -156,7 +194,7 @@ public class OnePagerController {
         model.addAttribute("vocValuesJson", om.writeValueAsString(vocValues));
 
         // =========================
-        // filtros (mantidos)
+        // filtros
         // =========================
         model.addAttribute("fyList", List.of("FY24", "FY25", "FY26"));
         model.addAttribute("quarters", List.of("Q1", "Q2", "Q3", "Q4"));
@@ -165,6 +203,57 @@ public class OnePagerController {
         ));
 
         return "one-pager/view";
+    }
+
+    // =========================
+    // Helpers
+    // =========================
+
+    // ✅ Month normalize: ""/null/ALL -> "" ; senão "JAN"
+    private String normalizeMonthRef(String month) {
+        if (month == null) return "";
+        String m = month.trim().toUpperCase();
+        if (m.isBlank()) return "";
+        if (m.equals("ALL")) return "";
+        return m;
+    }
+
+    // ✅ Converte "JAN" -> 1, ... "DEC" -> 12
+    private Integer monthRefToNumber(String monthRef) {
+        if (monthRef == null || monthRef.isBlank()) return null;
+
+        return switch (monthRef.toUpperCase()) {
+            case "JAN" -> 1;
+            case "FEB" -> 2;
+            case "MAR" -> 3;
+            case "APR" -> 4;
+            case "MAY" -> 5;
+            case "JUN" -> 6;
+            case "JUL" -> 7;
+            case "AUG" -> 8;
+            case "SEP" -> 9;
+            case "OCT" -> 10;
+            case "NOV" -> 11;
+            case "DEC" -> 12;
+            default -> null;
+        };
+    }
+
+    // ✅ Regra FY: deriva quarter do HFPI pelo mês selecionado
+    // Se monthRef estiver vazio (All Months), usa o quarter do filtro.
+    private String quarterForHfpiByMonth(String monthRef, String fallbackQuarter) {
+        if (monthRef == null) return fallbackQuarter;
+
+        String m = monthRef.trim().toUpperCase();
+        if (m.isBlank()) return fallbackQuarter;
+
+        return switch (m) {
+            case "JUN", "JUL", "AUG" -> "Q1";
+            case "SEP", "OCT", "NOV" -> "Q2";
+            case "DEC", "JAN", "FEB" -> "Q3";
+            case "MAR", "APR", "MAY" -> "Q4";
+            default -> fallbackQuarter;
+        };
     }
 
     // ✅ Pega percent mesmo se vier [a,b,p] OU [[a,b,p]]
@@ -183,6 +272,7 @@ public class OnePagerController {
         return 0.0;
     }
 
+    // (mantido caso você use em algum lugar)
     private String normalizeHfpiMonthForDb(String monthRef) {
         if (monthRef == null || monthRef.isBlank()) return "";
 
@@ -203,7 +293,8 @@ public class OnePagerController {
         };
     }
 
+    // ✅ 2 casas
     private String formatPercentNumber(double v) {
-        return String.format(java.util.Locale.US, "%.1f%%", v);
+        return String.format(java.util.Locale.US, "%.2f%%", v);
     }
 }
