@@ -81,7 +81,7 @@ public class OnePagerController {
         model.addAttribute("quarter", quarter);
         model.addAttribute("month", monthRef);
 
-        model.addAttribute("fyList", List.of("FY24", "FY25", "FY26"));
+        model.addAttribute("fyList", List.of("FY24", "FY25", "FY26", "FY27", "FY28"));
         model.addAttribute("quarters", List.of("Q1", "Q2", "Q3", "Q4"));
         model.addAttribute("months", List.of("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"));
 

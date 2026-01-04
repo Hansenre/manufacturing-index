@@ -12,6 +12,9 @@
 
   <!-- ✅ DataLabels (valores em cima de cada mês) -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  
+  <!-- Annotation (linhas Bronze/Prata) -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
 
   <!-- ✅ Ajustes locais para QUALIDADE (texto menor + imagem maior + contain) -->
   <style>
@@ -207,24 +210,18 @@
         <div class="one-pager-grid">
 
           <!-- HFPI -->
-          <div class="op-section">
-            <h3>HFPI GROUP &gt; 95%</h3>
+		  <div class="op-section hfpi-chart-card">
+		    <h3 class="hfpi-chart-title"
+		        th:text="'HFPI 2.0 – BP | ' + ${fy} + ' ' + ${quarter}">
+		      HFPI 2.0 – BP | FY26 Q1
+		    </h3>
 
-            <div class="hfpi-box">
-              <div>
-                <span>HFPI Geral</span>
-                <strong th:text="${hfpiGeneral != null ? hfpiGeneral : '0.0%'}">0.0%</strong>
-              </div>
-              <div>
-                <span>HFPI Fábrica</span>
-                <strong th:text="${hfpiFactory != null ? hfpiFactory : '0.0%'}">0.0%</strong>
-              </div>
-              <div>
-                <span>HFPI Online</span>
-                <strong th:text="${hfpiOnline != null ? hfpiOnline : '0.0%'}">0.0%</strong>
-              </div>
-            </div>
-          </div>
+		    <div class="chart-wrap hfpi-chart-wrap">
+		      <canvas id="hfpiChart"></canvas>
+		    </div>
+		  </div>
+
+
 
           <!-- VOC -->
           <div class="op-section">
@@ -400,6 +397,130 @@
     });
   }
 </script>
+
+<script th:inline="javascript">
+  function toNumber(v) {
+    if (v === null || v === undefined) return 0;
+    const s = String(v).replace('%', '').replace(',', '.').trim();
+    const n = parseFloat(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  const hfpiFinal   = toNumber(/*[[${hfpiGeneral}]]*/ 0);
+  const hfpiOnline  = toNumber(/*[[${hfpiOnline}]]*/ 0);
+  const hfpiFactory = toNumber(/*[[${hfpiFactory}]]*/ 0);
+
+  const hfpiCanvas = document.getElementById('hfpiChart');
+
+  // ✅ nada de return aqui
+  if (hfpiCanvas) {
+    const ctx = hfpiCanvas.getContext('2d');
+
+    // ✅ registra annotation se estiver disponível (CDN)
+    if (window.ChartAnnotation) {
+      Chart.register(window.ChartAnnotation);
+    }
+
+    // ✅ destrói instância anterior ao trocar filtro
+    if (window._hfpiChartInstance) {
+      window._hfpiChartInstance.destroy();
+    }
+
+    window._hfpiChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['HFPI FINAL', 'HFPI ONLINE', 'HFPI FACTORY'],
+        datasets: [{
+          data: [hfpiFinal, hfpiOnline, hfpiFactory],
+          borderRadius: 8,
+          barThickness: 70,
+          backgroundColor: ['#1e88e5', '#fb8c00', '#2e7d32']
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+
+        layout: { padding: { left: 10, right: 70, top: 10, bottom: 6 } },
+
+        plugins: {
+          legend: { display: false },
+
+          tooltip: {
+            callbacks: {
+              label: (c) => `${c.label}: ${Number(c.parsed.x).toFixed(1)}%`
+            }
+          },
+
+          datalabels: {
+            anchor: 'end',
+            align: 'right',
+            offset: 6,
+            clip: false,
+            clamp: true,
+            formatter: (v) => `${Number(v).toFixed(1)}%`,
+            font: { weight: '700' }
+          },
+
+          annotation: {
+            annotations: {
+              bronze: {
+                type: 'line',
+                xMin: 94, xMax: 94,
+                borderColor: '#d17b2e',
+                borderWidth: 3,
+                label: {
+                  display: true,
+                  content: 'Bronze 94%',
+                  position: 'end',
+                  backgroundColor: '#d17b2e',
+                  color: '#fff',
+                  padding: 8,
+                  borderRadius: 8,
+                  yAdjust: 18
+                }
+              },
+              prata: {
+                type: 'line',
+                xMin: 97, xMax: 97,
+                borderColor: '#9e9e9e',
+                borderWidth: 3,
+                label: {
+                  display: true,
+                  content: 'Prata 97%',
+                  position: 'end',
+                  backgroundColor: '#9e9e9e',
+                  color: '#000',
+                  padding: 8,
+                  borderRadius: 8,
+                  yAdjust: 52
+                }
+              }
+            }
+          }
+        },
+
+        scales: {
+          x: {
+            min: 0,
+            max: 102,
+            ticks: { callback: (v) => `${v}%` }
+          },
+          y: {
+            grid: { display: true },
+            ticks: { font: { weight: '700' } }
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+  } else {
+    console.warn('Canvas hfpiChart não encontrado');
+  }
+</script>
+
+
 
 
 </body>

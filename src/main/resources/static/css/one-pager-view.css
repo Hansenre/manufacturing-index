@@ -366,3 +366,86 @@ canvas{ width:100% !important; height:100% !important; }
     height:280px;
   }
 }
+
+.hfpi-block {
+  padding: 22px 26px;
+}
+
+.hfpi-title {
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #111;
+}
+
+.hfpi-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hfpi-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 90px;
+  gap: 14px;
+  align-items: center;
+}
+
+.hfpi-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hfpi-value {
+  text-align: right;
+  font-weight: 800;
+}
+
+.hfpi-bar {
+  position: relative;
+  height: 14px;
+  background: #e9eef3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hfpi-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 999px;
+}
+
+.hfpi-fill.ok  { background: #1f9d55; }  /* verde */
+.hfpi-fill.nok { background: #d64545; }  /* vermelho */
+
+.hfpi-target {
+  position: absolute;
+  left: 95%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: #111;
+  opacity: 0.55;
+}
+
+/* Responsivo */
+@media (max-width: 720px) {
+  .hfpi-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hfpi-value {
+    text-align: left;
+  }
+}
+
+.hfpi-chart-card { padding: 18px 18px 10px; }
+.hfpi-chart-title { text-align:center; margin: 6px 0 14px; }
+.hfpi-chart-wrap { height: 320px; } /* ajuste se quiser mais alto/baixo */
+
+

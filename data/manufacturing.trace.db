@@ -5499,3 +5499,36 @@ alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3b
 2026-01-03 21:21:46.502251-03:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
 alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-03 21:30:31.705714-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:01:21.335780-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:09:21.500736-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:12:09.922252-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:17:19.317666-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:21:22.796246-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:24:33.640389-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:27:48.596869-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:36:38.713144-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:37:58.565562-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
+2026-01-04 11:39:21.452715-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, [*]month, metric_key)"; expected "identifier"; SQL statement:
+alter table if exists kpi_quality_evidence add constraint UKf6p1khehtoyvbwa0kd3blhuqo unique (factory_id, fy, quarter, month, metric_key) [42001-224]
