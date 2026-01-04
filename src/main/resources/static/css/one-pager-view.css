@@ -1,402 +1,451 @@
-/* =====================================================
-   BASE LAYOUT (substitui layout.css só para esta página)
-===================================================== */
-
-html, body {
-  margin: 0;
-  padding: 0;
+:root{
+  --bg:#f4f6f8;
+  --paper:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --line:#111111;
+  --card:#ffffff;
+  --shadow:0 8px 24px rgba(0,0,0,.08);
+  --r-lg:18px;
+  --r-md:14px;
+  --gap:22px;
 }
 
-.container {
-  display: flex;
-  min-height: 100vh;
-  background: #f4f6f9;
+html,body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
 }
 
-.sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: #0b1220; /* pode ajustar */
-  color: #e5e7eb;
+*{ box-sizing:border-box; }
+img{ max-width:100%; display:block; }
+canvas{ width:100% !important; height:100% !important; }
+
+/* ====== WRAPPER / PAPER ====== */
+.one-pager-pdf{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  padding:24px 0;
 }
 
-.content {
-  flex: 1;
-  padding: 24px;
-  min-width: 0;
+.one-pager{
+  width:100%;
+  max-width:1600px;
+  background:var(--paper);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow);
+  padding:26px;
+  position:relative;
+  overflow:hidden;
+  min-width:0;
 }
 
-/* ================= RESET ISOLADO ================= */
-.one-pager,
-.one-pager * {
-  box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+.one-pager::before{
+  content:"";
+  position:absolute;
+  left:16px;
+  top:18px;
+  bottom:18px;
+  width:6px;
+  border-radius:6px;
+  background:#111;
+  opacity:.95;
 }
 
-/* ================= PDF WRAPPER ================= */
-.one-pager-pdf {
-  width: 100%;
-  background: #eaecef;
+/* ====== HEADER ====== */
+.one-pager-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding-left:18px;
+  margin-bottom:18px;
 }
 
-.one-pager {
-  width: 1600px;
-  margin: 0 auto;
-  padding: 24px;
-  background: #f4f6f9;
+.one-pager-header h2{
+  margin:0;
+  color:var(--text);
+  font-size:22px;
+  font-weight:800;
+  line-height:1.2;
 }
 
-/* ================= HEADER ================= */
-.one-pager-header {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 24px;
-  align-items: center;
-
-  background: #fff;
-  padding: 18px 22px;
-  border-radius: 10px;
-  border-left: 6px solid #000;
-  margin-bottom: 24px;
+.one-pager-header small{
+  display:block;
+  margin-top:6px;
+  font-size:16px;
+  color:var(--text);
+  font-weight:800;
 }
 
-.one-pager-header h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.one-pager-filter form {
-  display: flex;
-  gap: 10px;
+.one-pager-filter form{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
 .one-pager-filter select,
-.one-pager-filter button {
-  padding: 6px 10px;
-  border-radius: 6px;
+.one-pager-filter button{
+  height:34px;
+  padding:0 10px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  font-size:14px;
+  background:#fff;
 }
 
-/* ================= SECTION ================= */
-.op-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+.one-pager-filter button{
+  background:#111;
+  color:#fff;
+  border-color:#111;
+  cursor:pointer;
 }
 
-.op-section h3 {
-  margin: 0 0 14px;
-  padding-bottom: 6px;
-  border-bottom: 3px solid #000;
-  font-size: 15px;
+.btn-secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid #cfd6df;
+  background:#fff;
+  color:#111;
+  text-decoration:none;
+  white-space:nowrap;
 }
 
-/* ================= TOP GRID ================= */
-.kpi-top-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 42%) minmax(0, 58%);
-  gap: 22px;
-  margin-bottom: 22px;
+/* ====== SECTIONS / TITLES ====== */
+.op-section{
+  background:var(--card);
+  border-radius:var(--r-lg);
+  box-shadow:0 2px 14px rgba(0,0,0,.06);
+  padding:18px 18px 16px;
+  min-width:0;
 }
 
-/* ================= KPI TABLE ================= */
-.kpi-table {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
-  gap: 16px;
+.op-section h3{
+  margin:0 0 14px 0;
+  font-size:18px;
+  font-weight:900;
+  color:#111;
+  padding-bottom:8px;
+  border-bottom:3px solid var(--line);
 }
 
-.kpi-table div {
-  background: #000;
-  color: #fff;
-  padding: 16px;
-  border-radius: 10px;
-  text-align: center;
+/* ====== TOP GRID ====== */
+.kpi-top-grid{
+  display:grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap:var(--gap);
+  margin-bottom:var(--gap);
+  min-width:0;
 }
 
-.kpi-table strong {
-  display: block;
-  font-size: 20px;
-  margin-top: 6px;
+/* OP KPI cards */
+.kpi-table{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:14px;
 }
 
-/* ================= QUALITY ================= */
-.quality-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(220px, 1fr));
-  gap: 16px;
+.kpi-table > div{
+  background:#0b0b0b;
+  color:#fff;
+  border-radius:14px;
+  padding:18px 14px;
+  text-align:center;
+  min-width:0;
 }
 
-.quality-card {
-  border: 2px solid #000;
-  border-radius: 18px;
-  padding: 16px;
-  text-align: center;
+.kpi-table span{
+  display:block;
+  font-size:15px;
+  opacity:.9;
+  margin-bottom:6px;
 }
 
-/* ================= MAIN GRID ================= */
-.one-pager-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  margin-bottom: 22px;
+.kpi-table strong{
+  display:block;
+  font-size:26px;
+  font-weight:900;
 }
 
-/* ================= HFPI ================= */
-.hfpi-box {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(160px, 1fr));
-  gap: 16px;
+/* Quality */
+.quality-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:14px;
 }
 
-.hfpi-box div {
-  background: #f0f3f7;
-  border-radius: 10px;
-  padding: 16px;
-  text-align: center;
+.quality-card{
+  border:2px solid #111;
+  border-radius:18px;
+  padding:12px 12px 14px;
+  background:#fff;
+  min-width:0;
 }
 
-.hfpi-box strong {
-  font-size: 22px;
-  color: #1a7f37;
+.quality-card h4{
+  margin:4px 0 10px 0;
+  font-size:14px;
+  font-weight:900;
+  text-align:center;
+  color:#111;
 }
-
-/* ================= DR ================= */
-.dr-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dr-list li {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  font-size: 14px;
-}
-
-/* ================= SUMMARY ================= */
-.summary-box {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.summary-box div {
-  background: #f0f3f7;
-  border-radius: 10px;
-  padding: 16px;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1200px) {
-  .one-pager-header {
-    grid-template-columns: 1fr;
-  }
-
-  .kpi-top-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .quality-grid,
-  .summary-box,
-  .one-pager-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .kpi-table,
-  .quality-grid,
-  .hfpi-box {
-    grid-template-columns: 1fr;
-  }
-
-  .one-pager-filter form {
-    flex-direction: column;
-  }
-}
-
-/* =====================================================
-   TOP LINKS (Dashboard / Factories / Performance / Logout)
-   - Override local para não depender do CSS global
-===================================================== */
-
-.content > a,
-.content > p > a,
-.content > div > a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  margin-right: 8px;
-
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
-
-  color: #111827;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 700;
-
-  transition: background 0.15s ease, transform 0.05s ease;
-}
-
-.content > a:hover,
-.content > p > a:hover,
-.content > div > a:hover {
-  background: #f3f4f6;
-}
-
-.content > a:active,
-.content > p > a:active,
-.content > div > a:active {
-  transform: translateY(1px);
-}
-
-/* 2) Se os links estiverem dentro da sidebar (menu lateral) */
-.sidebar a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  padding: 10px 12px;
-  margin: 6px 10px;
-
-  border-radius: 10px;
-  text-decoration: none;
-
-  color: #e5e7eb;
-  font-weight: 700;
-  font-size: 13px;
-  transition: background 0.15s ease;
-}
-
-.sidebar a:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* 3) Estilo especial para Logout (detecta pelo href) */
-a[href*="logout"],
-a[href*="/logout"] {
-  border-color: #fecaca !important;
-  color: #b91c1c !important;
-}
-
-a[href*="logout"]:hover,
-a[href*="/logout"]:hover {
-  background: #fee2e2 !important;
-}
-
-/* 4) Se seus botões "Change Factory" usam .btn-secondary, padroniza aqui */
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-
-  color: #111827;
-  font-weight: 700;
-  font-size: 13px;
-  text-decoration: none;
-  transition: background 0.15s ease;
-}
-
-.btn-secondary:hover {
-  background: #f3f4f6;
-}
-
-/* 5) Botão Apply (sem depender de .btn-primary global) */
-.one-pager-filter button {
-  border: 1px solid #111827;
-  background: #111827;
-  color: #fff;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.one-pager-filter button:hover {
-  filter: brightness(1.08);
-}
-
-.divider{
-  height: 2px;
-  background: #111;
-  margin-top: 8px;
-}
-
-.chart-wrap{
-  position: relative;
-  height: 180px;   /* ESSENCIAL pro gráfico aparecer */
-  width: 100%;
-  margin-top: 12px;
-}
-
-/* =====================================================
-   ✅ AJUSTE: você tinha hfpi-box duplicado em flex.
-   Para não quebrar o HTML atual (grid), eu preservei hfpi-box em grid
-   e criei hfpi-card para o layout flex (se quiser usar depois).
-===================================================== */
-
-.hfpi-cards{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  padding-top: 12px;
-}
-
-/* use isto se quiser um card flex individual no futuro */
-.hfpi-card{
-  background: #f3f6f8;
-  border-radius: 10px;
-  padding: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.hfpi-card strong{
-  font-size: 22px;
-  font-weight: 800;
-  color: #0a8a3a;
-}
-
-/* =====================================================
-   ✅ NOVO: EVIDENCE (MPPA / MQAA / BTP)
-===================================================== */
 
 .quality-evidence{
-  margin-top: 10px;
-  width: 100%;
-  height: 110px;
-  border-radius: 10px;
-  border: 1px solid #e5e5e5;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height:54px;
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
 }
 
 .quality-evidence img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 .quality-evidence.empty{
-  background: #fafafa;
-  color: #777;
-  font-size: 12px;
+  background:#f3f4f6;
+  border:1px solid #e5e7eb;
+  color:#6b7280;
+  font-weight:700;
 }
 
-/* botão desabilitado quando month == null */
-.btn-secondary.disabled{
-  pointer-events: none;
-  opacity: .5;
+/* ====== MAIN GRID (HFPI/VOC/WASTE/DR) ====== */
+.one-pager-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:var(--gap);
+  min-width:0;
 }
+
+.hfpi-box{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:14px;
+}
+
+.hfpi-card{
+  background:#f3f6f9;
+  border-radius:14px;
+  padding:14px;
+  text-align:center;
+  min-width:0;
+}
+
+.hfpi-card strong{
+  font-size:22px;
+  font-weight:900;
+  color:#16a34a;
+}
+
+/* Charts */
+.chart-card{
+  background:#fff;
+  border-radius:var(--r-lg);
+  box-shadow:0 2px 14px rgba(0,0,0,.06);
+  padding:16px 18px 16px;
+  min-width:0;
+}
+
+.chart-title{
+  margin:0 0 10px 0;
+  font-size:18px;
+  font-weight:900;
+  color:#111;
+  padding-bottom:8px;
+  border-bottom:3px solid #111;
+}
+
+.chart-wrap{
+  height:220px;
+  position:relative;
+  min-width:0;
+}
+
+/* ====== RESPONSIVE ====== */
+
+/* <= 1200px: top section empilha e grids mais confortáveis */
+@media (max-width: 1200px){
+  .kpi-top-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* <= 900px: sidebar vira topo + grid vira 1 coluna */
+@media (max-width: 900px){
+  .container{
+    flex-direction:column !important;
+  }
+
+  .sidebar{
+    width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    position:static !important;
+  }
+
+  .content{
+    margin-left:0 !important;
+    width:100% !important;
+    padding:16px !important;
+  }
+
+  .one-pager-pdf{
+    padding:12px 0;
+  }
+
+  .one-pager{
+    max-width:100% !important;
+    width:100% !important;
+    border-radius:14px;
+    padding:18px;
+  }
+
+  .one-pager::before{
+    left:10px;
+    top:12px;
+    bottom:12px;
+  }
+
+  .one-pager-grid{
+    grid-template-columns:1fr;
+  }
+
+  .kpi-table{
+    grid-template-columns:1fr;
+  }
+
+  .quality-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hfpi-box{
+    grid-template-columns:1fr;
+  }
+
+  .chart-wrap{
+    height:260px;
+  }
+}
+
+/* <= 600px: header e filtros quebram bonitinho */
+@media (max-width: 600px){
+  .one-pager-header{
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
+
+  .one-pager-filter form{
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .one-pager-filter select,
+  .one-pager-filter button{
+    flex:1 1 120px;
+  }
+
+  .btn-secondary{
+    width:100%;
+  }
+
+  .one-pager-header h2{
+    font-size:20px;
+  }
+
+  .chart-wrap{
+    height:280px;
+  }
+}
+
+.hfpi-block {
+  padding: 22px 26px;
+}
+
+.hfpi-title {
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid #111;
+}
+
+.hfpi-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hfpi-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 90px;
+  gap: 14px;
+  align-items: center;
+}
+
+.hfpi-label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hfpi-value {
+  text-align: right;
+  font-weight: 800;
+}
+
+.hfpi-bar {
+  position: relative;
+  height: 14px;
+  background: #e9eef3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hfpi-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 999px;
+}
+
+.hfpi-fill.ok  { background: #1f9d55; }  /* verde */
+.hfpi-fill.nok { background: #d64545; }  /* vermelho */
+
+.hfpi-target {
+  position: absolute;
+  left: 95%;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  background: #111;
+  opacity: 0.55;
+}
+
+/* Responsivo */
+@media (max-width: 720px) {
+  .hfpi-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .hfpi-value {
+    text-align: left;
+  }
+}
+
+.hfpi-chart-card { padding: 18px 18px 10px; }
+.hfpi-chart-title { text-align:center; margin: 6px 0 14px; }
+.hfpi-chart-wrap { height: 320px; } /* ajuste se quiser mais alto/baixo */
+
+

@@ -32,10 +32,11 @@
                 🌱 VOC (gr/pairs)
             </a>
 
-            <a th:href="@{/waste/new/{id}(id=${factory.id})}"
-               class="action-card">
-                ♻ Waste
-            </a>
+			<a th:href="@{/waste/{id}(id=${factory.id})}"
+			 class="action-card">
+				 ♻ Waste
+		 	</a>
+
 
             <a th:href="@{/dr/new/{id}(id=${factory.id})}"
                class="action-card">

@@ -740,6 +740,232 @@
 }
 
 
+/* =========================
+   ONE PAGER – RESPONSIVE ONLY
+   cole no FINAL do one-pager-view.css (ou one-pager.css)
+========================= */
+
+/* evita charts/containers estourarem */
+.one-pager,
+.one-pager *{
+  box-sizing: border-box;
+}
+.one-pager { min-width: 0; }
+.one-pager canvas { max-width: 100%; }
+
+/* HEADER (título + filtros) quebra linha no mobile */
+.one-pager-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.one-pager-filter{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* GRID principal: 2 colunas no desktop */
+.one-pager-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* KPIs/metrics em cards (3 por linha no desktop) */
+.operation-kpi-cards,
+.kpi-cards,
+.metrics-cards{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* gráficos */
+.chart-container,
+.chart-box{
+  width: 100%;
+  min-width: 0;
+  height: 240px;
+}
+
+.chart-container canvas,
+.chart-box canvas{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* =========================
+   BREAKPOINTS
+========================= */
+
+/* <= 1200px: cards 3 -> 2 */
+@media (max-width: 1200px){
+  .operation-kpi-cards,
+  .kpi-cards,
+  .metrics-cards{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* <= 900px: grid 2 colunas -> 1 */
+@media (max-width: 900px){
+  .one-pager-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* <= 520px: cards 2 -> 1 e filtros full width */
+@media (max-width: 520px){
+  .operation-kpi-cards,
+  .kpi-cards,
+  .metrics-cards{
+    grid-template-columns: 1fr;
+  }
+
+  .one-pager-filter select,
+  .one-pager-filter button,
+  .one-pager-filter a{
+    width: 100%;
+  }
+}
+
+/* =========================================
+   ONE PAGER – RESPONSIVE (sobrescreve layout.css)
+   cole NO FINAL do one-pager-view.css
+   ========================================= */
+
+/* garante que nada estoure */
+.one-pager, .one-pager * { box-sizing: border-box; }
+.one-pager { min-width: 0; }
+.one-pager canvas { max-width: 100%; }
+
+/* ====== MOBILE/TABLET: empilha sidebar + conteúdo ====== */
+@media (max-width: 900px) {
+
+  /* aplica somente quando a página contém .one-pager */
+  .container:has(.one-pager) {
+    display: block !important;
+  }
+
+  /* sidebar (fragment) volta pro fluxo normal e não “esmaga” o conteúdo */
+  .container:has(.one-pager) .sidebar,
+  .container:has(.one-pager) aside,
+  .container:has(.one-pager) nav {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 0 14px 0 !important;
+  }
+
+  /* conteúdo não pode ficar com margin-left do layout.css */
+  .container:has(.one-pager) .content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 16px !important;
+  }
+
+  /* header do one pager quebra linha com os filtros */
+  .container:has(.one-pager) .one-pager-header {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  /* grid vira 1 coluna no mobile */
+  .container:has(.one-pager) .one-pager-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ====== MOBILE PEQUENO: esconde sidebar pra sobrar espaço ====== */
+@media (max-width: 520px) {
+  .container:has(.one-pager) .sidebar,
+  .container:has(.one-pager) aside,
+  .container:has(.one-pager) nav {
+    display: none !important;
+  }
+
+  .container:has(.one-pager) .content {
+    padding: 12px !important;
+  }
+}
+
+/* ================================
+   ONE PAGER – MOBILE FIX (paper full width)
+   cole NO FINAL do one-pager-view.css
+   ================================ */
+
+.one-pager-pdf,
+.one-pager {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+
+  /* some o "centro" que deixa a folha estreita */
+  .one-pager-pdf{
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* a "folha" vira 100% da tela */
+  .one-pager{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 16px !important; /* opcional */
+  }
+
+  /* evita overflow horizontal */
+  .one-pager,
+  .one-pager *{
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* grid do onepager vira 1 coluna */
+  .one-pager-grid{
+    grid-template-columns: 1fr !important;
+  }
+
+  /* header/filtros quebram linha */
+  .one-pager-header{
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  .one-pager-filter{
+    width: 100% !important;
+  }
+
+  .one-pager-filter form{
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* charts não estouram */
+  canvas{
+    max-width: 100% !important;
+  }
+}
+
+/* mobile pequeno: reduz padding */
+@media (max-width: 520px){
+  .one-pager{
+    border-radius: 12px !important;
+  }
+}
+
+
+
+
+
 
 
 
