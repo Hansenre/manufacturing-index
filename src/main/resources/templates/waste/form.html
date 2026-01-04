@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Waste (gr/pairs)</title>
+  <link rel="stylesheet" th:href="@{/css/layout.css}">
+  <link rel="stylesheet" th:href="@{/css/forms.css}">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body>
+
+<div class="container">
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <div class="content">
+
+    <h2>♻ Waste (gr/pairs)</h2>
+    <p>Factory: <strong th:text="${factory.name}">Factory</strong></p>
+
+    <!-- ✅ FORM PRINCIPAL (SAVE) -->
+    <form th:action="@{/waste/save/{id}(id=${factory.id})}" method="post" class="form-card">
+      <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <h3>📅 Period</h3>
+
+      <label>Fiscal Year (FY)</label>
+      <select name="fy">
+        <option th:each="f : ${fyList}"
+                th:value="${f}"
+                th:text="${f}"
+                th:selected="${f == fy}">
+        </option>
+      </select>
+
+      <label>Quarter</label>
+      <select name="quarter">
+        <option th:each="q : ${quarters}"
+                th:value="${q}"
+                th:text="${q}"
+                th:selected="${q == quarter}">
+        </option>
+      </select>
+
+	  <label>Month</label>
+	  <select name="monthRef">
+	    <option th:each="m : ${months}"
+	            th:value="${m}"
+	            th:text="${m}"
+	            th:selected="${m == monthRef}">
+	    </option>
+	  </select>
+
+
+      <h3>♻ Waste (gr/pairs)</h3>
+
+      <div style="display:flex; gap:16px; align-items:center;">
+        <input id="wasteRange"
+               type="range"
+               min="0" max="300" step="0.1"
+               name="wasteGrPairs"
+               value="0"
+               style="flex:1;">
+        <div class="pill" style="min-width:90px; text-align:center;">
+          <span id="wasteValue">0.0</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; display:flex; gap:10px;">
+        <button class="btn-primary" type="submit">💾 Save Waste</button>
+
+        <a class="btn-secondary"
+           th:href="@{/one-pager/{id}(id=${factory.id}, fy=${fy}, quarter=${quarter}, month=${month})}">
+          Cancel
+        </a>
+      </div>
+    </form>
+
+    <!-- ✅ DELETE FORA DO FORM (sem form aninhado, botão não some por submit errado) -->
+	<div th:if="${wasteLatest != null}" style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+	  <div class="pill">
+	    Latest: <strong th:text="${#numbers.formatDecimal(wasteLatest.wasteGrPairs,1,1)}">0.0</strong>
+	  </div>
+
+	  <form th:action="@{/waste/{id}/delete-latest(id=${factory.id})}" method="post" style="margin:0;">
+	    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+	    <input type="hidden" name="fy" th:value="${fy}">
+	    <input type="hidden" name="quarter" th:value="${quarter}">
+	    <input type="hidden" name="monthRef" th:value="${monthRef}">
+
+	    <button type="submit" class="btn-secondary" onclick="return confirm('Delete latest waste record for this month?')">
+	      🗑 Delete Latest
+	    </button>
+	  </form>
+	</div>
+
+    <!-- ✅ GRÁFICO -->
+    <div class="form-card" style="margin-top:18px;">
+      <h3>📈 WASTE – LAST SIX MONTHS</h3>
+
+      <div th:if="${wasteEmpty}" style="opacity:.7; margin-top:10px;">
+        No Waste data for the last 6 months.
+      </div>
+
+      <div th:if="${!wasteEmpty}" style="height:220px;">
+        <canvas id="wasteChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const range = document.getElementById("wasteRange");
+  const out = document.getElementById("wasteValue");
+  const sync = () => out.textContent = Number(range.value).toFixed(1);
+  range.addEventListener("input", sync);
+  sync();
+</script>
+
+<script th:inline="javascript">
+  // ✅ funciona com (List) wasteLabels/wasteValues
+  // ✅ e também com (String JSON) wasteLabelsJson/wasteValuesJson
+  let wasteLabels = /*[[${wasteLabels}]]*/ null;
+  let wasteValues = /*[[${wasteValues}]]*/ null;
+
+  if (!Array.isArray(wasteLabels) || wasteLabels.length === 0) {
+    const labelsJson = /*[[${wasteLabelsJson ?: '[]'}]]*/ '[]';
+    const valuesJson = /*[[${wasteValuesJson ?: '[]'}]]*/ '[]';
+    try {
+      wasteLabels = JSON.parse(labelsJson);
+      wasteValues = JSON.parse(valuesJson);
+    } catch (e) {
+      wasteLabels = [];
+      wasteValues = [];
+    }
+  }
+
+  const canvas = document.getElementById('wasteChart');
+
+  if (canvas && Array.isArray(wasteLabels) && wasteLabels.length > 0) {
+    Chart.register(ChartDataLabels);
+
+    new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: wasteLabels,
+        datasets: [{
+          label: 'Waste',
+          data: wasteValues,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 18, right: 8, bottom: 8, left: 8 } },
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            offset: 6,
+            formatter: (v) => {
+              const n = Number(v);
+              return isNaN(n) ? v : n.toFixed(1);
+            }
+          }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

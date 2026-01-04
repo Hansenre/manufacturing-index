@@ -239,10 +239,19 @@
             </p>
           </div>
 
-          <!-- WASTE -->
-          <div class="op-section">
-            <h3>WASTE – LAST SIX MONTHS</h3>
-          </div>
+		  <!-- WASTE -->
+		  <div class="op-section">
+		    <h3>WASTE – LAST SIX MONTHS</h3>
+
+		    <div class="chart-wrap">
+		      <canvas id="wasteChart"></canvas>
+		    </div>
+
+		    <p class="chart-empty" th:if="${wasteEmpty}">
+		      No Waste data for the last 6 months.
+		    </p>
+		  </div>
+
 
           <!-- DR -->
           <div class="op-section">
@@ -347,6 +356,51 @@
     });
   }
 </script>
+
+<script th:inline="javascript">
+  const wasteLabels = JSON.parse(/*[[${wasteLabelsJson ?: '[]'}]]*/ '[]');
+  const wasteValues = JSON.parse(/*[[${wasteValuesJson ?: '[]'}]]*/ '[]');
+
+  const wasteCanvas = document.getElementById('wasteChart');
+
+  if (wasteCanvas && Array.isArray(wasteLabels) && wasteLabels.length > 0) {
+    const wctx = wasteCanvas.getContext('2d');
+
+    new Chart(wctx, {
+      type: 'line',
+      data: {
+        labels: wasteLabels,
+        datasets: [{
+          label: 'Waste',
+          data: wasteValues,
+          tension: 0.3,
+          pointRadius: 4,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 18, right: 8, bottom: 8, left: 8 } },
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            offset: 6,
+            formatter: (v) => {
+              const n = Number(v);
+              return isNaN(n) ? v : n.toFixed(1);
+            }
+          }
+        },
+        scales: { y: { beginAtZero: true } }
+      },
+      plugins: [ChartDataLabels]
+    });
+  }
+</script>
+
 
 </body>
 </html>
